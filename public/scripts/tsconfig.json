@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2016",
+    "useDefineForClassFields": true,
+    "module": "ES2022",
+    "lib": ["ES2023", "DOM"],
+    "moduleResolution": "Classic",
+    "strict": true,
+    "isolatedModules": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "outDir": "./js"
+  },
+  "include": ["./ts"]
+}
