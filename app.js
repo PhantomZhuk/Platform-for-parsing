@@ -1,20 +1,26 @@
 const express = require("express");
-const app = express();
-dotenv = require("dotenv");
+require('dotenv').config();
+const mongoose = require("mongoose");
+const cors = require(`cors`)
 const PORT = process.env.PORT || 3000;
+const routes = {
+    admin: require('./routes/admin'),
+    api: require('./routes/api'),
+    main: require('./routes/main')
+};
 
-app.use(express.static("public"));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => {
+        console.log("Connected to MongoDB");
+    })
 
-app.get(`/`, (req, res) =>{
-    res.sendFile(__dirname + "/public/pages/index.html");
-})
-
-app.get(`/admin`, (req, res) =>{
-    res.sendFile(__dirname + "/public/pages/admin.html");
-})
-
-app.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}`);
-})
+express()
+    .use(express.static("public"))
+    .use(express.urlencoded({ extended: true }))
+    .use(express.json())
+    .use('/admin',routes.admin)
+    .use('/api', routes.api)
+    .use('/', routes.main)
+    .listen(PORT, () => {
+        console.log(`Listening on port ${PORT}`);
+    })
