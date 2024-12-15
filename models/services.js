@@ -16,7 +16,7 @@ const availabilitySchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    class: {
+    className: {
         type: String,
         default: null
     }
@@ -63,4 +63,10 @@ const servicesSchema = new mongoose.Schema({
         required: true
     },
 });
-module.exports = mongoose.model("services", servicesSchema);
+
+module.exports = {
+    Services: mongoose.model("Services", servicesSchema),
+    Availability: mongoose.model("Availability", availabilitySchema),
+    Search: mongoose.model("Search", searchSchema),
+    HTML: mongoose.model("HTML", HTMLSchema),
+};
