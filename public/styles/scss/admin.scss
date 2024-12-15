@@ -4,6 +4,7 @@ $inactive-color: #7e7d82;
 $elements-bg: #1f1f1f;
 $global-bg: #0d0d0d;
 $padding-inline: 21px;
+$medium-color: #d3d3d3;
 $active-aside-section: #753efe;
 //! Colors
 
@@ -117,5 +118,35 @@ aside {
 //! Main styles
 main {
   flex: 20;
+  display: flex;
+}
+section {
+  width: 90%;
+  color: $medium-color;
+  display: inline-flex;
+  flex-direction: column;
+  padding-top: 15px;
+  padding-inline: $padding-inline;
+}
+.dashboard__services {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  &-list {
+    display: flex;
+    height: 150px;
+    padding: 12px;
+  }
+}
+.services__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  &-left,
+  &-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 }
 //! Main styles
