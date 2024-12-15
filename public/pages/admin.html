@@ -7,6 +7,67 @@
     <link rel="stylesheet" href="/styles/css/admin.css" />
   </head>
   <body>
-    <script src="/scripts/js/admin.js"></script>
+    <header>
+      <h1>Parser</h1>
+      <div class="header-right">
+        <select class="pages">
+          <option>Admin</option>
+        </select>
+        <div class="avatar">
+          <img src="" alt="" class="avatar__img" />
+          <span class="avatar__name"></span>
+        </div>
+      </div>
+    </header>
+    <main>
+      <aside>
+        <h2>Web app panel</h2>
+        <ul>
+          <li>Dashboard</li>
+          <li>Users</li>
+          <li>Services</li>
+        </ul>
+      </aside>
+      <section></section>
+    </main>
+    <template id="template-users"></template>
+    <template id="template-services">
+      <div class="services__header">
+        <div class="services__header-left">
+          <h3>Services</h3>
+          <button class="services__header-add">Add new one</button>
+        </div>
+        <div class="services__header-right">
+          <input
+            type="text"
+            class="services__header-search"
+            placeholder="Search"
+          />
+        </div>
+      </div>
+      <div class="services__table">
+        <div class="services__table-head">
+          <span>Name</span>
+          <span>URL</span>
+          <span>Actions</span>
+        </div>
+        <div class="services__table-body"></div>
+      </div>
+      <div class="services__visits">
+        <script></script>
+      </div>
+      <!-- states are: closed, editing, creating -->
+      <div class="services__edit-popup" data-state="closed"></div>
+    </template>
+    <template id="template-dashboard">
+      <div class="dashboard__services">
+        <h3>Services</h3>
+        <ul class="dashboard__services-list"></ul>
+      </div>
+      <div class="dashboard__registrations">
+        <script></script>
+      </div>
+    </template>
+    <script defer src="/scripts/js/admin.js"></script>
   </body>
 </html>

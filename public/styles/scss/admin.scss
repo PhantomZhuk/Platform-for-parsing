@@ -1,0 +1,30 @@
+//! Main styles
+$color: rgb(255, 123, 123);
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  color: $color;
+  border-bottom: solid $color;
+  border-bottom-width: 2px;
+}
+h1 {
+  font-size: clamp(30px, 10vw, 50px);
+  width: fit-content;
+}
+h3 {
+  font-size: clamp(20px, 10vw, 35px);
+  width: fit-content;
+}
+aside {
+  display: inline-flex;
+  width: clamp(200px, 20vw, 400px);
+  flex-direction: column;
+}
+//! Main styles

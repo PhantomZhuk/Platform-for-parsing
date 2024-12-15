@@ -1,1 +1,1 @@
-/*# sourceMappingURL=admin.css.map */
+*{margin:0;padding:0;box-sizing:border-box}header{display:flex;justify-content:space-between;align-items:center;padding:20px;color:#ff7b7b;border-bottom:solid #ff7b7b;border-bottom-width:2px}h1{font-size:clamp(30px,10vw,50px);width:-moz-fit-content;width:fit-content}h3{font-size:clamp(20px,10vw,35px);width:-moz-fit-content;width:fit-content}aside{display:inline-flex;width:clamp(200px,20vw,400px);flex-direction:column}/*# sourceMappingURL=admin.css.map */
