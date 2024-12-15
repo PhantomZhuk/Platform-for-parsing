@@ -71,6 +71,9 @@ h1 {
 //! Header styles
 
 //! Aside styles
+[name="opened-section"] {
+  display: none;
+}
 aside {
   background-color: $elements-bg;
   width: 315px;
@@ -85,7 +88,7 @@ aside {
   ul {
     list-style: none;
   }
-  li {
+  label {
     img {
       width: 20px;
       height: 20px;
@@ -97,8 +100,8 @@ aside {
     gap: 10px;
     display: inline-flex;
     align-items: center;
-    &.active {
-      border-radius: 8px;
+    border-radius: 8px;
+    &:has([type="radio"]:checked) {
       background-color: $active-aside-section;
       color: $active-color;
     }
