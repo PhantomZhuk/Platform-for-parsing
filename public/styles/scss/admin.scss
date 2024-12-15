@@ -12,6 +12,7 @@ $active-aside-section: #753efe;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: "Manrope", sans-serif;
 }
 body {
   height: 100vh;
@@ -76,7 +77,7 @@ h1 {
 }
 aside {
   background-color: $elements-bg;
-  width: 315px;
+  width: clamp(200px, 30vw, 315px);
   display: inline-flex;
   flex-direction: column;
   padding: 28px $padding-inline;
