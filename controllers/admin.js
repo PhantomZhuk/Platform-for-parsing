@@ -9,8 +9,16 @@ module.exports = {
             const search = new Search({ normalText, additionalText });
             const services = new Services({ domain, search, html });
             await services.save();
-            res.json(services);
+            res.sendStatus(201).send({ message: "Services created" });
         } catch (err) {
+            console.log(err);
+        }
+    },
+    getServices: async (req, res) => {
+        try {
+            const service = await Services.find();
+            res.json(service)
+        }catch (err){
             console.log(err);
         }
     }
