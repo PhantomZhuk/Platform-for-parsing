@@ -12,20 +12,23 @@
       <div class="header-right">
         <select class="pages">
           <option>Admin</option>
+          <option>Home</option>
         </select>
         <div class="avatar">
           <img src="" alt="" class="avatar__img" />
-          <span class="avatar__name"></span>
+          <span class="avatar__name">User 1</span>
         </div>
       </div>
     </header>
     <main>
       <aside>
-        <h2>Web app panel</h2>
+        <h3 class="aside__title">Web app panel</h3>
         <ul>
-          <li>Dashboard</li>
-          <li>Users</li>
-          <li>Services</li>
+          <li class="active">
+            <img src="/images/Dashboard-icon.png" alt="Icon" /> Dashboard
+          </li>
+          <li><img src="/images/Users-icon.png" alt="Icon" /> Users</li>
+          <li><img src="/images/Services-icon.png" alt="Icon" /> Services</li>
         </ul>
       </aside>
       <section></section>
@@ -34,7 +37,7 @@
     <template id="template-services">
       <div class="services__header">
         <div class="services__header-left">
-          <h3>Services</h3>
+          <h2>Services</h2>
           <button class="services__header-add">Add new one</button>
         </div>
         <div class="services__header-right">

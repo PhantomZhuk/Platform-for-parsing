@@ -1,30 +1,117 @@
-//! Main styles
-$color: rgb(255, 123, 123);
+//! Colors
+$active-color: #ffffff;
+$inactive-color: #7e7d82;
+$elements-bg: #1f1f1f;
+$global-bg: #0d0d0d;
+$padding-inline: 21px;
+$active-aside-section: #753efe;
+//! Colors
+
+//! Global styles
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+body {
+  height: 100vh;
+  display: flex;
+  background-color: $global-bg;
+  flex-direction: column;
+}
+//! Global styles
+
+//! Header styles
 header {
   display: flex;
+  flex: 1;
+  border-bottom: 1px solid $global-bg;
   justify-content: space-between;
+  padding: 24px $padding-inline;
+  background-color: $elements-bg;
   align-items: center;
-  padding: 20px;
-  color: $color;
-  border-bottom: solid $color;
-  border-bottom-width: 2px;
 }
 h1 {
-  font-size: clamp(30px, 10vw, 50px);
-  width: fit-content;
+  color: $active-color;
+  font-size: 32px;
 }
-h3 {
-  font-size: clamp(20px, 10vw, 35px);
-  width: fit-content;
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 32px;
 }
-aside {
+.pages {
+  color: $active-color;
+  font-size: 18px;
+  cursor: pointer;
+  background-color: $elements-bg;
+  border: none;
+}
+.avatar {
   display: inline-flex;
-  width: clamp(200px, 20vw, 400px);
+  border-radius: 10px;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 12px;
+  background-color: $active-color;
+  &__img {
+    aspect-ratio: 1/1;
+    height: 100%;
+    border-radius: 50%;
+  }
+  &__name {
+    max-height: 22px;
+    color: $elements-bg;
+    font-size: 21px;
+  }
+}
+
+//! Header styles
+
+//! Aside styles
+aside {
+  background-color: $elements-bg;
+  width: 315px;
+  display: inline-flex;
   flex-direction: column;
+  padding: 28px $padding-inline;
+  color: $inactive-color;
+  max-height: 100vh;
+  height: 100%;
+
+  gap: 24px;
+  ul {
+    list-style: none;
+  }
+  li {
+    img {
+      width: 20px;
+      height: 20px;
+    }
+    padding: 18px 23px;
+    width: 100%;
+    font-size: 16px;
+    cursor: pointer;
+    gap: 10px;
+    display: inline-flex;
+    align-items: center;
+    &.active {
+      border-radius: 8px;
+      background-color: $active-aside-section;
+      color: $active-color;
+    }
+  }
+}
+.aside__title {
+  font-size: 14px;
+}
+
+//! Aside styles
+
+//! Main styles
+main {
+  flex: 20;
 }
 //! Main styles
