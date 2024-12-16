@@ -41,11 +41,11 @@ module.exports = {
     updateServices: async (req, res) => {
         try {
             const _id = req.params._id;
-            const { domain, normalText, additionalText, ul, name, link, price, image, pageLink, exists, className } = req.body;
+            const { serviceName, domain, normalText, additionalText, ul, name, price, image, pageLink, exists, className } = req.body;
             const availability = new Availability({ exists, className });
-            const html = new HTML({ ul, name, link, price, image, pageLink, availability });
+            const html = new HTML({ ul, name, price, image, pageLink, availability });
             const search = new Search({ normalText, additionalText });
-            const services = new Services({ domain, search, html });
+            const services = new Services({ serviceName, domain, search, html });
             await Services.findByIdAndUpdate(_id, services);
             res.sendStatus(200).send({ message: "Services updated" });
         } catch (err) {
