@@ -8,28 +8,44 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-(() => {
+(() => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        function fillServicesTable(html) {
+        const services = yield (yield fetch("/admin/getServices", { method: "GET" })).json();
+        function fillServicesList(html) {
             return __awaiter(this, void 0, void 0, function* () {
-                const services = [];
-                const data = yield (yield fetch("/admin/getServices", { method: "GET" })).json();
-                data.length > 0 && services.push(...data);
-                const regex = /(<div class="services__table">)\n?.*\n.*\n.*\n.*\n.*\n.*\n.*/g;
                 if (services.length == 0)
-                    return html.replace(regex, 
-                    /*html*/ `<div class="services__table"><div class="services__table-empty">No services found</div></div><div class="services__visits">`);
-                return html.replace(regex, services.reduce((prev, service) => {
-                    return (prev +
-                        /*html*/ `<div class="services__table-row">
-                <span>${service.name}</span>
-                <span>${service.domain}</span>
-                <div class="services__table-actions">
-                  <button class="services__table-edit">Edit</button>
-                  <button class="services__table-delete">Delete</button>
+                    return html.replace(/<ul class="services__list"><\/ul>/g, 
+                    /*html*/ `<ul class="services__list"><div class="services__table-empty">No services found</div></div><div class="services__visits">`);
+                function setHTMLPart(info, className, desc) {
+                    return /*html*/ `
+                <div class="services__item services__item--${className}">
+                  <span>${desc}</span>
+                  <textarea rows="1" type="text" readonly>${info}</textarea>
                 </div>
-              </div>`);
-                }, ""));
+                `;
+                }
+                return html.replace(/<ul class="services__list"><\/ul>/g, 
+                /*html*/ `<ul class="services__list">` +
+                    services.reduce((prev, service) => {
+                        return (prev +
+                            /*html*/ `
+              <li id="${service.serviceName}">
+              <div class="service-fns"><button class="service-fns__edit">🖉</button><button class="service-fns__delete">🗑</button></div>
+              ${setHTMLPart(service.serviceName, "name", "Service name :")}
+              ${setHTMLPart(service.domain, "domain", "Domain :")}
+              ${setHTMLPart(service.html.name, "html__name", "html name class :")}
+              ${setHTMLPart(service.html.ul, "html__ul", "html ul class :")}
+              ${setHTMLPart(service.html.image, "html__image", "html image class :")}
+              ${setHTMLPart(service.html.pageLink, "html__link", "html pageLink class :")}
+              ${setHTMLPart(service.html.price, "html__price", "html price class :")}
+              ${setHTMLPart(String(service.html.availability.exists), "html__availability-exists", "Shows availability :")}
+              ${setHTMLPart(service.html.availability.className, "html__availability-class", "Availability class :")}
+              ${setHTMLPart(service.search.normalText, "search__normal", "Search normal text :")}
+              ${setHTMLPart(service.search.additionalText, "search__additional", "Search additional text :")}
+              </li>
+              `);
+                    }, "") +
+                    "</ul>");
             });
         }
         function switchSection(event) {
@@ -47,7 +63,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
                     case "Users":
                         break;
                     case "Services":
-                        sectionHTML = yield fillServicesTable(sectionHTML);
+                        sectionHTML = yield fillServicesList(sectionHTML);
                         break;
                 }
                 sectionNode.insertAdjacentHTML("afterbegin", sectionHTML);
@@ -60,5 +76,5 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     catch (e) {
         alert(e);
     }
-})();
+}))();
 //# sourceMappingURL=admin.js.map

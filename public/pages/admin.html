@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Admin page</title>
     <link rel="stylesheet" href="/styles/css/admin.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -44,48 +44,8 @@
           >
         </ul>
       </aside>
-      <section>
-        <div class="dashboard__services">
-          <h3>Services</h3>
-          <ul class="dashboard__services-list"></ul>
-        </div>
-        <div class="dashboard__registrations">
-          <h3>Registrations</h3>
-          <script></script>
-        </div>
-      </section>
+      <section></section>
     </main>
-    <template id="template-users"></template>
-    <template id="template-services">
-      <div class="services__header">
-        <div class="services__header-left">
-          <h2>Services</h2>
-          <button class="services__header-add">Add new one</button>
-        </div>
-        <div class="services__header-right">
-          <input
-            type="text"
-            class="services__header-search"
-            placeholder="Search"
-          />
-          <button class="services__header-search-btn">Search</button>
-        </div>
-      </div>
-      <div class="services__table">
-        <div class="services__table-head">
-          <span>Name</span>
-          <span>URL</span>
-          <span>Actions</span>
-        </div>
-        <div class="services__table-body"></div>
-      </div>
-
-      <div class="services__visits">
-        <script></script>
-      </div>
-      <!-- states are: closed, editing, creating -->
-      <div class="services__edit-popup" data-state="closed"></div>
-    </template>
     <template id="template-dashboard">
       <div class="dashboard__services">
         <h3>Services</h3>
@@ -95,6 +55,40 @@
         <h3>Registrations</h3>
         <script></script>
       </div>
+    </template>
+    <script>
+      (() => {
+        document.querySelector("section").innerHTML = document.querySelector(
+          "#template-dashboard"
+        ).innerHTML;
+        let scripts = document.querySelectorAll("script");
+        scripts[scripts.length - 1].remove();
+      })();
+    </script>
+    <template id="template-users"></template>
+    <template id="template-services">
+      <div class="services__header">
+        <div class="services__header-left">
+          <h2>All Services</h2>
+          <button class="services__header-add">+ Add new one</button>
+        </div>
+        <div class="services__header-right">
+          <input
+            type="text"
+            class="services__header-search"
+            placeholder="Search"
+          />
+          <button class="services__header-search-btn">
+            <img src="/images/search-icon.png" alt="Search" />
+          </button>
+        </div>
+      </div>
+      <ul class="services__list"></ul>
+      <div class="services__visits">
+        <script></script>
+      </div>
+      <!-- states are: closed, editing, creating -->
+      <div class="services__edit-popup" data-state="closed"></div>
     </template>
     <script defer src="/scripts/js/admin.js"></script>
   </body>
