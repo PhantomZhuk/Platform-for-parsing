@@ -22,6 +22,7 @@ module.exports = {
                 delete service.html._id;
                 delete service.search._id;
                 delete service.html.availability._id;
+                return service;
             });
             res.json(service)
         } catch (err) {
