@@ -1,5 +1,4 @@
-const controllers = require("../controllers/admin.js");
-const puppeteer = require("puppeteer");
-const cherreio = require("cheerio");
+const controllers = require("../controllers/api.js");
 module.exports = require("express")
     .Router()
+    .post(`/getProductsFromSearch`, controllers.getProductsFromSearch)

@@ -50,6 +50,10 @@ const HTMLSchema = new mongoose.Schema({
 })
 
 const servicesSchema = new mongoose.Schema({
+    servicesName:{
+        type: String,
+        required: true
+    },
     domain: {
         type: String,
         required: true
