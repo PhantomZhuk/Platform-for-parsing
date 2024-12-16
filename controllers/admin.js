@@ -3,11 +3,11 @@ const { Services, Availability, Search, HTML } = require('../models/services');
 module.exports = {
     createServices: async (req, res) => {
         try {
-            let { servicesName, domain, normalText, additionalText, ul, name, price, image, pageLink, exists, className } = req.body;
+            let { serviceName, domain, normalText, additionalText, ul, name, price, image, pageLink, exists, className } = req.body;
             const availability = new Availability({ exists, className });
             const html = new HTML({ ul, name, price, image, pageLink, availability });
             const search = new Search({ normalText, additionalText });
-            const services = new Services({ servicesName, domain, search, html });
+            const services = new Services({ serviceName, domain, search, html });
             await services.save();
             res.sendStatus(201).send({ message: "Services created" });
         } catch (err) {

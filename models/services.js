@@ -50,7 +50,7 @@ const HTMLSchema = new mongoose.Schema({
 })
 
 const servicesSchema = new mongoose.Schema({
-    servicesName:{
+    serviceName:{
         type: String,
         required: true
     },
