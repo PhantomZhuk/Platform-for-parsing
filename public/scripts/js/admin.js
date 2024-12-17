@@ -91,11 +91,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
                     break;
             }
             sectionNode.insertAdjacentHTML("afterbegin", sectionHTML);
-            // Array.from(
-            //   document.querySelectorAll<HTMLCanvasElement>(
-            //     "[id*=dashboard__service-chart-]"
-            //   )
-            // ).forEach((canvas) => {});
+            Array.from(document.querySelectorAll("[id*=dashboard__service-chart-]")).forEach((canvas) => {
+                console.log(canvas.width);
+                function chart(p) {
+                    p.setup = () => {
+                        p.createCanvas(93, 45, canvas);
+                        p.stroke(122, 158, 68);
+                        p.strokeWeight(3);
+                        p.line(0, 0, p.width / 2, p.height / 2);
+                        p.line(p.width / 2, p.height / 2, p.width, 0);
+                    };
+                }
+                new p5(chart);
+            });
         }
         document
             .querySelector("aside ul")
