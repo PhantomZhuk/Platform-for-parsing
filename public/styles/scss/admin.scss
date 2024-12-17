@@ -128,14 +128,34 @@ section {
   padding-top: 15px;
   padding-inline: $padding-inline;
 }
-.dashboard__services {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  &-list {
+.dashboard__service {
+  height: 116px;
+  width: 212px;
+  background: #0a7055;
+  border-radius: 8px;
+  display: grid;
+  padding: 15px 13px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  font-size: 12px;
+  &-visits {
+    display: inline-flex;
+    flex-direction: column;
+  }
+  &-increase {
+    color: #89d300;
+    justify-self: right;
+  }
+  &s {
     display: flex;
-    height: 150px;
-    padding: 12px;
+    flex-direction: column;
+    gap: 6px;
+
+    &-list {
+      display: flex;
+      height: 150px;
+      padding: 12px;
+    }
   }
 }
 .services__header {
@@ -228,5 +248,9 @@ section {
       box-shadow: 0 0 6px $active-color, inset 0 0 6px $active-color;
     }
   }
+}
+[id*="dashboard__service-chart-"] {
+  width: 93px;
+  height: 43px;
 }
 //! Main styles

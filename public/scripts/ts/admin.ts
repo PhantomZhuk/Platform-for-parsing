@@ -1,4 +1,6 @@
-type Sections = "Dashboard" | "Users" | "Services";
+type Section = "Dashboard" | "Users" | "Services";
+//import p5 from "./p5";
+
 interface Service {
   serviceName: string;
   domain: string;
@@ -23,7 +25,8 @@ interface Service {
     const services: Service[] = await (
       await fetch("/admin/getServices", { method: "GET" })
     ).json();
-    async function fillServicesList(html: string): Promise<string> {
+
+    function fillServicesList(html: string): string {
       if (services.length == 0)
         return html.replace(
           /<ul class="services__list"><\/ul>/g,
@@ -40,7 +43,7 @@ interface Service {
       return html.replace(
         /<ul class="services__list"><\/ul>/g,
         /*html*/ `<ul class="services__list">` +
-          services.reduce((prev, service) => {
+          services.reduce((prev: string, service: Service): string => {
             return (
               prev +
               /*html*/ `
@@ -96,13 +99,48 @@ interface Service {
           "</ul>"
       );
     }
-    async function switchSection(event: MouseEvent): Promise<void> {
-      const target: HTMLLabelElement = event.target as HTMLLabelElement;
-      if (target.tagName !== "LABEL") return;
-      const sectionName = target.textContent!.trim() as Sections;
+    function fillDashboardServices(html: string): string {
+      if (services.length == 0)
+        return html.replace(
+          /<ul class="dashboard__services-list"><\/ul>/g,
+          /*html*/ `<ul class="services__list"><div class="services__table-empty">No services found</div></div><div class="services__visits">`
+        );
+      return html.replace(
+        /<ul class="dashboard__services-list"><\/ul>/g,
+        `<ul class="dashboard__services-list">` +
+          services.reduce((prev: string, service: Service): string => {
+            return (
+              prev +
+              /*html*/ `<li class="dashboard__service">
+              <h4 class="dashboard__service-name">${service.serviceName}</h4>
+              <p class="dashboard__service-increase">+10</p>
+              <div class="dashboard__service-visits">
+                <span>Visitors</span>
+                <span style="font-size: 18px">100</span>
+              </div>
+              <canvas id="dashboard__service-chart-${service.serviceName}"></canvas>
+            </li>`
+            );
+          }, "") +
+          `</ul>`
+      );
+    }
+    function switchSection(event: MouseEvent, SectionName: null): void;
+    function switchSection(event: null, SectionName: Section): void;
+    function switchSection(
+      event: MouseEvent | null,
+      SectionName: Section | null
+    ): void {
+      const sectionName = (() => {
+        if (SectionName) return SectionName;
+        const target: HTMLLabelElement = event!.target as HTMLLabelElement;
+        const label = target.closest("label");
+        if (!label) return null;
+        return label.textContent!.trim() as Section;
+      })();
+      if (!sectionName) return;
       const sectionNode = document.querySelector("section")!;
       sectionNode.innerHTML = "";
-
       let sectionHTML = (
         document.getElementById(
           `template-${sectionName.toLowerCase()}`
@@ -110,19 +148,29 @@ interface Service {
       ).innerHTML;
       switch (sectionName) {
         case "Dashboard":
+          sectionHTML = fillDashboardServices(sectionHTML);
           break;
         case "Users":
           break;
         case "Services":
-          sectionHTML = await fillServicesList(sectionHTML);
+          sectionHTML = fillServicesList(sectionHTML);
 
           break;
       }
       sectionNode.insertAdjacentHTML("afterbegin", sectionHTML);
+      // Array.from(
+      //   document.querySelectorAll<HTMLCanvasElement>(
+      //     "[id*=dashboard__service-chart-]"
+      //   )
+      // ).forEach((canvas) => {});
     }
+
     document
       .querySelector<HTMLUListElement>("aside ul")!
-      .addEventListener("click", switchSection);
+      .addEventListener("click", function (e) {
+        switchSection(e, null);
+      });
+    switchSection(null, "Dashboard");
   } catch (e) {
     alert(e);
   }

@@ -12,23 +12,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     try {
         const services = yield (yield fetch("/admin/getServices", { method: "GET" })).json();
         function fillServicesList(html) {
-            return __awaiter(this, void 0, void 0, function* () {
-                if (services.length == 0)
-                    return html.replace(/<ul class="services__list"><\/ul>/g, 
-                    /*html*/ `<ul class="services__list"><div class="services__table-empty">No services found</div></div><div class="services__visits">`);
-                function setHTMLPart(info, className, desc) {
-                    return /*html*/ `
+            if (services.length == 0)
+                return html.replace(/<ul class="services__list"><\/ul>/g, 
+                /*html*/ `<ul class="services__list"><div class="services__table-empty">No services found</div></div><div class="services__visits">`);
+            function setHTMLPart(info, className, desc) {
+                return /*html*/ `
                 <div class="services__item services__item--${className}">
                   <span>${desc}</span>
                   <textarea rows="1" type="text" readonly>${info}</textarea>
                 </div>
                 `;
-                }
-                return html.replace(/<ul class="services__list"><\/ul>/g, 
-                /*html*/ `<ul class="services__list">` +
-                    services.reduce((prev, service) => {
-                        return (prev +
-                            /*html*/ `
+            }
+            return html.replace(/<ul class="services__list"><\/ul>/g, 
+            /*html*/ `<ul class="services__list">` +
+                services.reduce((prev, service) => {
+                    return (prev +
+                        /*html*/ `
               <li id="${service.serviceName}">
               <div class="service-fns"><button class="service-fns__edit">🖉</button><button class="service-fns__delete">🗑</button></div>
               ${setHTMLPart(service.serviceName, "name", "Service name :")}
@@ -44,34 +43,66 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
               ${setHTMLPart(service.search.additionalText, "search__additional", "Search additional text :")}
               </li>
               `);
-                    }, "") +
-                    "</ul>");
-            });
+                }, "") +
+                "</ul>");
         }
-        function switchSection(event) {
-            return __awaiter(this, void 0, void 0, function* () {
+        function fillDashboardServices(html) {
+            if (services.length == 0)
+                return html.replace(/<ul class="dashboard__services-list"><\/ul>/g, 
+                /*html*/ `<ul class="services__list"><div class="services__table-empty">No services found</div></div><div class="services__visits">`);
+            return html.replace(/<ul class="dashboard__services-list"><\/ul>/g, `<ul class="dashboard__services-list">` +
+                services.reduce((prev, service) => {
+                    return (prev +
+                        /*html*/ `<li class="dashboard__service">
+              <h4 class="dashboard__service-name">${service.serviceName}</h4>
+              <p class="dashboard__service-increase">+10</p>
+              <div class="dashboard__service-visits">
+                <span>Visitors</span>
+                <span style="font-size: 18px">100</span>
+              </div>
+              <canvas id="dashboard__service-chart-${service.serviceName}"></canvas>
+            </li>`);
+                }, "") +
+                `</ul>`);
+        }
+        function switchSection(event, SectionName) {
+            const sectionName = (() => {
+                if (SectionName)
+                    return SectionName;
                 const target = event.target;
-                if (target.tagName !== "LABEL")
-                    return;
-                const sectionName = target.textContent.trim();
-                const sectionNode = document.querySelector("section");
-                sectionNode.innerHTML = "";
-                let sectionHTML = document.getElementById(`template-${sectionName.toLowerCase()}`).innerHTML;
-                switch (sectionName) {
-                    case "Dashboard":
-                        break;
-                    case "Users":
-                        break;
-                    case "Services":
-                        sectionHTML = yield fillServicesList(sectionHTML);
-                        break;
-                }
-                sectionNode.insertAdjacentHTML("afterbegin", sectionHTML);
-            });
+                const label = target.closest("label");
+                if (!label)
+                    return null;
+                return label.textContent.trim();
+            })();
+            if (!sectionName)
+                return;
+            const sectionNode = document.querySelector("section");
+            sectionNode.innerHTML = "";
+            let sectionHTML = document.getElementById(`template-${sectionName.toLowerCase()}`).innerHTML;
+            switch (sectionName) {
+                case "Dashboard":
+                    sectionHTML = fillDashboardServices(sectionHTML);
+                    break;
+                case "Users":
+                    break;
+                case "Services":
+                    sectionHTML = fillServicesList(sectionHTML);
+                    break;
+            }
+            sectionNode.insertAdjacentHTML("afterbegin", sectionHTML);
+            // Array.from(
+            //   document.querySelectorAll<HTMLCanvasElement>(
+            //     "[id*=dashboard__service-chart-]"
+            //   )
+            // ).forEach((canvas) => {});
         }
         document
             .querySelector("aside ul")
-            .addEventListener("click", switchSection);
+            .addEventListener("click", function (e) {
+            switchSection(e, null);
+        });
+        switchSection(null, "Dashboard");
     }
     catch (e) {
         alert(e);
