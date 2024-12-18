@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const searchSchema = new mongoose.Schema({
     normalText: {
@@ -68,9 +68,7 @@ const servicesSchema = new mongoose.Schema({
     },
 });
 
-module.exports = {
-    Services: mongoose.model("Services", servicesSchema),
-    Availability: mongoose.model("Availability", availabilitySchema),
-    Search: mongoose.model("Search", searchSchema),
-    HTML: mongoose.model("HTML", HTMLSchema),
-};
+export const Services = mongoose.model("Services", servicesSchema);
+export const Availability = mongoose.model("Availability", availabilitySchema);
+export const Search = mongoose.model("Search", searchSchema);
+export const HTML = mongoose.model("HTML", HTMLSchema);

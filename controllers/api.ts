@@ -1,10 +1,24 @@
-const puppeteer = require("puppeteer");
-const cheerio = require("cheerio");
-const { Services } = require("../models/services");
-const { timeout } = require("puppeteer");
-const { set } = require("mongoose");
+import puppeteer from "puppeteer";
+import * as cheerio from "cheerio";
+import { Services } from "../models/services";
 
-module.exports = {
+interface IProduct {
+    productName: string;
+    price: string;
+    photo: string;
+    pageLink: string;
+    exists: boolean;
+    className: string;
+}
+
+interface IRandimProduct {
+    productName: string;
+    price: string;
+    photo: string;
+    pageLink: string;
+}
+
+export default {
     getProductsFromSearch: async (req, res) => {
         try {
             const { searchText } = req.body;
@@ -28,14 +42,14 @@ module.exports = {
             const html = await page.content();
             const $ = cheerio.load(html);
 
-            const data = [];
+            const data: IProduct[] = [];
             $(`.${service.html.ul} li`).each((index, element) => {
-                const productName = $(element).find(`.${service.html.name}`).text().trim();
-                const price = $(element).find(`.${service.html.price}`).text().trim();
-                const photo = $(element).find(`.${service.html.image} img`).attr('src');
-                const pageLink = $(element).find(`.${service.html.pageLink}`).attr('href');
-                const exists = service.html.availability.exists;
-                const className = $(element).find(`.${service.html.availability.className}`).text().trim();
+                const productName: string = $(element).find(`.${service.html.name}`).text().trim();
+                const price: string = $(element).find(`.${service.html.price}`).text().trim();
+                const photo: string = $(element).find(`.${service.html.image} img`).attr('src')!;
+                const pageLink: string = $(element).find(`.${service.html.pageLink}`).attr('href')!;
+                const exists: boolean = service.html.availability.exists;
+                const className: string = $(element).find(`.${service.html.availability.className}`).text().trim();
                 data.push({
                     productName,
                     price,
@@ -65,12 +79,12 @@ module.exports = {
             await page.waitForSelector(`.catalog-grid`, { visible: true, timeout: 60000 });
             const html = await page.content();
             const $ = cheerio.load(html);
-            const data = [];
+            const data: IRandimProduct[] = [];
             $(`.catalog-grid li`).each((index, element) => {
-                const productName = $(element).find(`.goods-tile__title`).text().trim();
-                const price = $(element).find(`.goods-tile__price-value`).text().trim();
-                const photo = $(element).find(`.goods-tile__picture img`).attr('src');
-                const pageLink = $(element).find(`.product-link a`).attr('href');
+                const productName: string = $(element).find(`.goods-tile__title`).text().trim();
+                const price: string = $(element).find(`.goods-tile__price-value`).text().trim();
+                const photo: string = $(element).find(`.goods-tile__picture img`).attr('src')!;
+                const pageLink: string = $(element).find(`.product-link a`).attr('href')!;
                 if (data.length < 10) {
                     data.push({
                         productName,
