@@ -202,16 +202,21 @@ section {
   }
 }
 .services__list {
+  width: 100%;
+  gap: 30px;
   max-height: 490px;
   overflow: auto;
   padding: 20px;
   display: inline-flex;
   flex-direction: column;
   > * {
+    &:has(.services__item:hover) > .services__item {
+      filter: blur(1px);
+    }
+    max-width: 900px;
     position: relative;
     padding: 20px;
     border-radius: 21px;
-    max-width: 710px;
     box-shadow: 0 0 4px white;
     background-color: $elements-bg;
     display: inline-flex;
@@ -232,10 +237,16 @@ section {
     }
   }
 }
+.services__item {
+  transition: 0.3s;
+  &:hover {
+    filter: none !important;
+  }
+}
 .service-fns {
   position: absolute;
   right: 20px;
-  * {
+  > * {
     cursor: pointer;
     border: $active-color 1px solid;
     background: transparent;
@@ -252,5 +263,13 @@ section {
 [id*="dashboard__service-chart-"] {
   width: 93px;
   height: 43px;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: $medium-color;
+  border-radius: 10px;
 }
 //! Main styles
