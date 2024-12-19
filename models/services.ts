@@ -50,7 +50,7 @@ const HTMLSchema = new mongoose.Schema({
 })
 
 const servicesSchema = new mongoose.Schema({
-    serviceName:{
+    serviceName: {
         type: String,
         required: true
     },
@@ -66,7 +66,15 @@ const servicesSchema = new mongoose.Schema({
         type: HTMLSchema,
         required: true
     },
+    // visits: {
+    //     type: [Number],
+    //     default: [0, 0, 0, 0, 0, 0]
+    // }
 });
+
+// servicesSchema.virtual(`addVisit`).set((visit: number) => {
+    
+// });
 
 export const Services = mongoose.model("Services", servicesSchema);
 export const Availability = mongoose.model("Availability", availabilitySchema);

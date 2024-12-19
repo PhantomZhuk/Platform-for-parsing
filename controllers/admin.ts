@@ -14,7 +14,7 @@ interface IService {
     className: string;
 }
 
-interface IServiceDocument extends Document {
+interface IServiceDocument {
     serviceName: string;
     domain: string;
     search: {
@@ -48,7 +48,7 @@ export default {
             const search: object = new Search({ normalText, additionalText });
             const services = new Services({ serviceName, domain, search, html });
             await services.save();
-            res.sendStatus(201).send({ message: "Services created" });
+            res.send({ message: "Services created" });
         } catch (err) {
             console.log(err);
         }

@@ -10,7 +10,7 @@ dotenv.config();
 
 const PORT: number | string = process.env.PORT || 3000;
 
-mongoose.connect(process.env.MONGODB_URI as string)
+mongoose.connect(process.env.MONGODB_URI!)
     .then(() => {
         console.log("Connected to MongoDB");
     });
