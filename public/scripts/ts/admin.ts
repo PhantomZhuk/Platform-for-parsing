@@ -16,8 +16,17 @@ interface sketchFns {
   endShape: () => void;
   vertex: (x: number, y: number) => void;
   strokeWeight: (weight: number) => void;
-  stroke: (color: number, color2?: number, color3?: number) => void;
+  stroke: (
+    color: number,
+    color2?: number,
+    color3?: number,
+    ...colors: number[]
+  ) => void;
   line: (x1: number, y1: number, x2: number, y2: number) => void;
+  noLoop: () => void;
+  fill: (color: number, color2?: number, color3?: number) => void;
+  noFill: () => void;
+  point: (x: number, y: number) => void;
   width: number;
   height: number;
 }
@@ -40,6 +49,10 @@ interface Service {
     normalText: string;
     additionalText: string;
   };
+  visits: Array<{
+    date: string;
+    count: number;
+  }>;
 }
 void (async () => {
   try {
@@ -119,11 +132,9 @@ void (async () => {
       }
       function fillDashboardSection(): void {
         const dashboardEl = document.getElementById("template-dashboard")!;
-        console.log(dashboardEl);
         const servicesListEl = dashboardEl.querySelector(
           ".dashboard__services-list"
         )!;
-
         if (services.length == 0)
           servicesListEl.innerHTML = /*html*/ `<div class="services__table-empty">No services found</div>`;
         else
@@ -144,6 +155,93 @@ void (async () => {
             },
             ""
           );
+        servicesListEl
+          .querySelectorAll("canvas")
+          .forEach((canvas: HTMLCanvasElement, index: number) => {
+            const visits = services[index].visits || [
+              {
+                date: new Date().toISOString().split("T")[0],
+                count: 0,
+              },
+              {
+                date: new Date().toISOString().split("T")[0],
+                count: 30,
+              },
+              {
+                date: new Date().toISOString().split("T")[0],
+                count: 20,
+              },
+              {
+                date: new Date().toISOString().split("T")[0],
+                count: 43,
+              },
+              {
+                date: new Date().toISOString().split("T")[0],
+                count: 32,
+              },
+              {
+                date: new Date().toISOString().split("T")[0],
+                count: 37,
+              },
+            ];
+            const CANVAS_WIDTH = 83;
+            const CANVAS_HEIGHT = 33;
+            const LEFT = 5;
+            const TOP = 5;
+            const xPerWeek: number = CANVAS_WIDTH / (visits.length + 1);
+            const max = Math.max(...visits.map((visit) => visit.count));
+            const yPerVisit: number = CANVAS_HEIGHT / max;
+            const increase =
+              visits[0].count >= visits[visits.length - 1].count ? false : true;
+            function sketch(p: sketchFns) {
+              p.setup = () => {
+                p.createCanvas(
+                  CANVAS_WIDTH + 2 * LEFT,
+                  CANVAS_HEIGHT + 2 * TOP,
+                  canvas
+                );
+                p.noLoop();
+              };
+              p.draw = () => {
+                p.stroke(
+                  ...((increase ? [122, 158, 68] : [255, 87, 87]) as [
+                    number,
+                    number,
+                    number
+                  ])
+                );
+                p.strokeWeight(2);
+                p.beginShape();
+                p.noFill();
+                for (const visit of visits)
+                  p.vertex(
+                    xPerWeek * (visits.indexOf(visit) + 1) + LEFT,
+                    CANVAS_HEIGHT + TOP - visit.count * yPerVisit
+                  );
+
+                p.endShape();
+              };
+            }
+            new p5(sketch);
+            const service = canvas.parentElement! as HTMLLIElement;
+            service.querySelector(
+              ".dashboard__service-visits"
+            )!.children[1].textContent = visits
+              .reduce(
+                (prev: number, curr: { count: number }) => prev + curr.count,
+                0
+              )
+              .toString();
+            const increaseEl = service.querySelector<HTMLSpanElement>(
+              ".dashboard__service-increase"
+            )!;
+            increaseEl.textContent =
+              (visits[0].count >= visits[visits.length - 1].count ? "-" : "+") +
+              String(visits[visits.length - 1].count - visits[0].count);
+            increaseEl.style.color = increaseEl.textContent.includes("-")
+              ? "rgb(255 87 87)"
+              : "#89d300";
+          });
       }
       fillDashboardSection();
       fillServicesSection();

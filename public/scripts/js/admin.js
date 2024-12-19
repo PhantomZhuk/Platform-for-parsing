@@ -47,7 +47,6 @@ void (() => __awaiter(void 0, void 0, void 0, function* () {
             }
             function fillDashboardSection() {
                 const dashboardEl = document.getElementById("template-dashboard");
-                console.log(dashboardEl);
                 const servicesListEl = dashboardEl.querySelector(".dashboard__services-list");
                 if (services.length == 0)
                     servicesListEl.innerHTML = /*html*/ `<div class="services__table-empty">No services found</div>`;
@@ -64,6 +63,71 @@ void (() => __awaiter(void 0, void 0, void 0, function* () {
                 <canvas id="dashboard__service-chart-${service.serviceName}"></canvas>
               </li>`);
                     }, "");
+                servicesListEl
+                    .querySelectorAll("canvas")
+                    .forEach((canvas, index) => {
+                    const visits = services[index].visits || [
+                        {
+                            date: new Date().toISOString().split("T")[0],
+                            count: 0,
+                        },
+                        {
+                            date: new Date().toISOString().split("T")[0],
+                            count: 30,
+                        },
+                        {
+                            date: new Date().toISOString().split("T")[0],
+                            count: 20,
+                        },
+                        {
+                            date: new Date().toISOString().split("T")[0],
+                            count: 43,
+                        },
+                        {
+                            date: new Date().toISOString().split("T")[0],
+                            count: 32,
+                        },
+                        {
+                            date: new Date().toISOString().split("T")[0],
+                            count: 37,
+                        },
+                    ];
+                    const CANVAS_WIDTH = 83;
+                    const CANVAS_HEIGHT = 33;
+                    const LEFT = 5;
+                    const TOP = 5;
+                    const xPerWeek = CANVAS_WIDTH / (visits.length + 1);
+                    const max = Math.max(...visits.map((visit) => visit.count));
+                    const yPerVisit = CANVAS_HEIGHT / max;
+                    const increase = visits[0].count >= visits[visits.length - 1].count ? false : true;
+                    function sketch(p) {
+                        p.setup = () => {
+                            p.createCanvas(CANVAS_WIDTH + 2 * LEFT, CANVAS_HEIGHT + 2 * TOP, canvas);
+                            p.noLoop();
+                        };
+                        p.draw = () => {
+                            p.stroke(...(increase ? [122, 158, 68] : [255, 87, 87]));
+                            p.strokeWeight(2);
+                            p.beginShape();
+                            p.noFill();
+                            for (const visit of visits)
+                                p.vertex(xPerWeek * (visits.indexOf(visit) + 1) + LEFT, CANVAS_HEIGHT + TOP - visit.count * yPerVisit);
+                            p.endShape();
+                        };
+                    }
+                    new p5(sketch);
+                    const service = canvas.parentElement;
+                    service.querySelector(".dashboard__service-visits").children[1].textContent = visits
+                        .reduce((prev, curr) => prev + curr.count, 0)
+                        .toString();
+                    const increaseEl = service.querySelector(".dashboard__service-increase");
+                    increaseEl.textContent =
+                        (visits[0].count >= visits[visits.length - 1].count ? "-" : "+") +
+                            String(visits[visits.length - 1].count - visits[0].count);
+                    increaseEl.style.color = increaseEl.textContent.includes("-")
+                        ? "rgb(255 87 87)"
+                        : "#89d300";
+                });
             }
             fillDashboardSection();
             fillServicesSection();

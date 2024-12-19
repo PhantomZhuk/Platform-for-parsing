@@ -152,6 +152,7 @@ section {
     gap: 6px;
 
     &-list {
+      gap: 8px;
       display: flex;
       height: 150px;
       padding: 12px;
@@ -202,9 +203,9 @@ section {
   }
 }
 .services__list {
+  max-height: calc(100vh - 60px - 35px - 75px);
   width: 100%;
   gap: 30px;
-  max-height: 490px;
   overflow: auto;
   padding: 20px;
   display: inline-flex;
