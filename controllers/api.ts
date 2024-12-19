@@ -44,12 +44,12 @@ export default {
 
             const data: IProduct[] = [];
             $(`.${service.html.ul} li`).each((index, element) => {
-                const productName: string = $(element).find(`.${service.html.name}`).text().trim();
-                const price: string = $(element).find(`.${service.html.price}`).text().trim();
-                const photo: string = $(element).find(`.${service.html.image} img`).attr('src')!;
-                const pageLink: string = $(element).find(`.${service.html.pageLink}`).attr('href')!;
+                const productName: string = $(element).find(`${service.html.name}`).text().trim();
+                const price: string = $(element).find(`${service.html.price}`).text().trim();
+                const photo: string = $(element).find(`${service.html.image} img`).attr('src')!;
+                const pageLink: string = $(element).find(`${service.html.pageLink}`).attr('href')!;
                 const exists: boolean = service.html.availability.exists;
-                const className: string = $(element).find(`.${service.html.availability.className}`).text().trim();
+                const className: string = $(element).find(`${service.html.availability.className}`).text().trim();
                 data.push({
                     productName,
                     price,
@@ -120,12 +120,12 @@ export default {
                 const $ = cheerio.load(html);
                 const data: IProduct[] = [];
                 $(`.${service.html.ul}`).each((index, element) => {
-                    const productName: string = $(element).find(`.${service.html.name}`).text().trim();
-                    const price: string = $(element).find(`.${service.html.price}`).text().trim();
-                    const photo: string = $(element).find(`.${service.html.image} img`).attr('src')!;
-                    const pageLink: string = $(element).find(`.${service.html.pageLink}`).attr('href')!;
+                    const productName: string = $(element).find(`${service.html.name}`).text().trim();
+                    const price: string = $(element).find(`${service.html.price}`).text().trim();
+                    const photo: string = $(element).find(`${service.html.image} img`).attr('src')!;
+                    const pageLink: string = $(element).find(`${service.html.pageLink}`).attr('href')!;
                     const exists: boolean = service.html.availability.exists;
-                    const className: string = $(element).find(`.${service.html.availability.className}`).text().trim();
+                    const className: string = $(element).find(`${service.html.availability.className}`).text().trim();
                     if (productName.includes(searchText)) {
                         data.push({
                             productName,
@@ -138,8 +138,12 @@ export default {
                     }
                 });
 
-                const lowestPrice = Math.min(...data.map(item => parseFloat(item.price)));
-                dataProducts.push(...data.filter(item => parseFloat(item.price) === lowestPrice));
+                const filteredData = data.filter(item =>
+                    item.productName && item.price && item.pageLink && item.photo
+                );
+
+                const lowestPrice: number = Math.min(...filteredData.map(item => parseFloat(item.price)));
+                dataProducts.push(...filteredData.filter(item => parseFloat(item.price) === lowestPrice));
                 await browser.close();
             }
 
@@ -147,5 +151,16 @@ export default {
         } catch (err) {
             console.log(err);
         }
-    }
+    },
+    addVisit: async (req, res) => {
+        try {
+            const serviceName = req.body.serviceName;
+            const service = await Services.findOne({ serviceName });
+            if (!service) throw new Error("Service not found");
+            await service.addVisit(1);
+            await service.save();
+        } catch (err) {
+            console.log(err);
+        }
+    },
 }
