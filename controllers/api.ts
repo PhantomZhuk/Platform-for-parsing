@@ -1,6 +1,11 @@
 import puppeteer, { Page } from "puppeteer";
 import * as cheerio from "cheerio";
-import { Services } from "../models/services";
+import { Services, User } from "../models/services";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+
+const SECRET_KEY: string = process.env.SECRET_KEY!;
+const REFRESH_TOKEN_SECRET: string = process.env.REFRESH_TOKEN_SECRET!;
 
 interface IProduct {
     productName: string;
@@ -16,6 +21,17 @@ interface IRandimProduct {
     price: string;
     photo: string;
     pageLink: string;
+}
+
+function authenticateToken(req, res, next) {
+    const token: string = req.headers[`authorization`]?.split(` `)[1];
+    if (!token) return res.status(401).send({ message: "Access token required" })
+
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+        if (err) return res.status(403).json({ message: "Invalid or expired token" });
+        req.user = user;
+        next();
+    })
 }
 
 export default {
@@ -163,4 +179,39 @@ export default {
             console.log(err);
         }
     },
+    createUser: async (req, res) => {
+        try {
+            const { email, password } = req.body;
+            const token: string = jwt.sign({ email: email }, SECRET_KEY, { expiresIn: '15m' });
+            const refreshToken: string = jwt.sign({ email: email }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+            const user = new User(
+                {
+                    email,
+                    password: await bcrypt.hashSync(password, 10),
+                }
+            );
+            await user.save();
+            res.json({ token, refreshToken });
+        } catch (err) { console.log(err); }
+    },
+    protected: [authenticateToken, async (req, res) => {
+        res.json({ message: 'This is a secure route', user: req.user });
+    }],
+    refresh: async (req, res) => {
+        const refreshToken: string = req.headers[`refresh-token`]?.split(` `)[1];
+
+        if (!refreshToken) {
+            return res.status(401).json({ message: "No refresh token provided" });
+        }
+
+        jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, (err, user: any) => {
+            if (err){
+                console.error('Refresh token verification error:', err);
+                return res.status(403).json({ message: "Invalid or expired refresh token" });
+            }
+
+            const newToken: string = jwt.sign({ email: user.email }, SECRET_KEY, { expiresIn: '15m' });
+            res.json({ token: newToken });
+        })
+    }
 }

@@ -70,8 +70,8 @@ export default {
     },
     deleteServices: async (req, res) => {
         try {
-            const _id = req.params._id;
-            await Services.findByIdAndDelete(_id);
+            const serviceName = req.params.serviceName;
+            await Services.findByIdAndDelete(serviceName);
             res.sendStatus(200).send({ message: "Services deleted" });
         } catch (err) {
             console.log(err);
@@ -79,13 +79,12 @@ export default {
     },
     updateServices: async (req, res) => {
         try {
-            const _id = req.params._id;
             const { serviceName, domain, normalText, additionalText, ul, name, price, image, pageLink, exists, className } = req.body;
             const availability = new Availability({ exists, className });
             const html = new HTML({ ul, name, price, image, pageLink, availability });
             const search = new Search({ normalText, additionalText });
             const services = new Services({ serviceName, domain, search, html });
-            await Services.findByIdAndUpdate(_id, services);
+            await Services.findByIdAndUpdate(services);
             res.sendStatus(200).send({ message: "Services updated" });
         } catch (err) {
             console.log(err);

@@ -7,5 +7,7 @@ const router = express
     .get(`/getRandomProducts`, controllers.getRandomProducts)
     .post(`/fetchProductFromServices`, controllers.fetchProductFromServices)
     .post(`/addServiceVisit`, controllers.addVisit)
+    .get(`/protected`, ...controllers.protected)
+    .get(`/refreshToken`, controllers.refresh);
 
 export default router;
