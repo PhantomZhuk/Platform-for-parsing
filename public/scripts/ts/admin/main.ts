@@ -42,6 +42,9 @@ void (async () => {
           );
       }
     } as any);
+    sections.services.htmlEl
+      .querySelector(".services__header-search-btn")!
+      .addEventListener("click", () => sections.services.searchServices());
   } catch (e) {
     alert("Something went wrong");
     console.log(e);

@@ -153,6 +153,12 @@ class Services {
             writable: true,
             value: this.htmlEl.querySelector(".services__list")
         });
+        Object.defineProperty(this, "searchInput", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: this.htmlEl.querySelector(".services__header-search")
+        });
     }
     createServiceCardField(info, className, description) {
         return /*html*/ `
@@ -278,6 +284,16 @@ class Services {
                 return goToPath(obj[nextProperty], properties.join("."));
             }
             goToPath(serviceInDB, key);
+        });
+    }
+    searchServices() {
+        const servicesEls = this.htmlEl.querySelectorAll(".services__list>li");
+        const searchRegex = new RegExp(`${this.searchInput.value}`, "i");
+        servicesEls.forEach((serviceEl) => {
+            if (searchRegex.test(serviceEl.id))
+                serviceEl.removeAttribute("style");
+            else
+                serviceEl.style.display = "none";
         });
     }
 }

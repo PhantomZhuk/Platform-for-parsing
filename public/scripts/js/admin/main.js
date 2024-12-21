@@ -43,6 +43,9 @@ void (() => __awaiter(void 0, void 0, void 0, function* () {
                 }
             });
         });
+        sections.services.htmlEl
+            .querySelector(".services__header-search-btn")
+            .addEventListener("click", () => sections.services.searchServices());
     }
     catch (e) {
         alert("Something went wrong");

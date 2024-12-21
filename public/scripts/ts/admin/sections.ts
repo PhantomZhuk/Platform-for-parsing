@@ -124,6 +124,9 @@ class Users {
 class Services {
   htmlEl: HTMLElement = document.getElementById("template-services")!;
   servicesList: HTMLElement = this.htmlEl.querySelector(".services__list")!;
+  searchInput: HTMLInputElement = this.htmlEl.querySelector<HTMLInputElement>(
+    ".services__header-search"
+  )!;
   createServiceCardField(
     info: string,
     className: string,
@@ -304,6 +307,15 @@ class Services {
         return goToPath(obj[nextProperty], properties.join("."));
       }
       goToPath(serviceInDB, key);
+    });
+  }
+  searchServices(): void {
+    const servicesEls =
+      this.htmlEl.querySelectorAll<HTMLLIElement>(".services__list>li");
+    const searchRegex = new RegExp(`${this.searchInput.value}`, "i");
+    servicesEls.forEach((serviceEl) => {
+      if (searchRegex.test(serviceEl.id)) serviceEl.removeAttribute("style");
+      else serviceEl.style.display = "none";
     });
   }
 }
