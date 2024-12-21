@@ -214,6 +214,17 @@ section {
     &:has(.services__item:hover) > .services__item {
       filter: blur(1px);
     }
+    &.editing {
+      background-color: #4d4d4d;
+      .service-fns {
+        &__editing {
+          display: contents;
+        }
+        &__standard {
+          display: none;
+        }
+      }
+    }
     max-width: 900px;
     position: relative;
     padding: 20px;
@@ -245,9 +256,15 @@ section {
   }
 }
 .service-fns {
+  &__standard {
+    display: contents;
+  }
+  &__editing {
+    display: none;
+  }
   position: absolute;
   right: 20px;
-  > * {
+  * {
     cursor: pointer;
     border: $active-color 1px solid;
     background: transparent;
