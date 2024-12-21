@@ -234,7 +234,7 @@ export default {
                     {
                         login,
                         email,
-                        password: await bcrypt.hashSync(password, 10),
+                        password: bcrypt.hashSync(password, 10),
                     }
                 );
                 await user.save();
