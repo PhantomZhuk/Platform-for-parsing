@@ -71,7 +71,7 @@ export default {
     deleteServices: async (req, res) => {
         try {
             const serviceName = req.params.serviceName;
-            await Services.findByIdAndDelete(serviceName);
+            await Services.findOneAndDelete(serviceName);
             res.sendStatus(200).send({ message: "Services deleted" });
         } catch (err) {
             console.log(err);
@@ -79,15 +79,25 @@ export default {
     },
     updateServices: async (req, res) => {
         try {
-            const { serviceName, domain, normalText, additionalText, ul, name, price, image, pageLink, exists, className } = req.body;
-            const availability = new Availability({ exists, className });
-            const html = new HTML({ ul, name, price, image, pageLink, availability });
-            const search = new Search({ normalText, additionalText });
-            const services = new Services({ serviceName, domain, search, html });
-            await Services.findByIdAndUpdate(services);
-            res.sendStatus(200).send({ message: "Services updated" });
+            const { serviceName, ...updates } = req.body;
+
+            if (!serviceName) {
+                return res.status(400).json({ message: "Service name is required" });
+            }
+
+            const updatedService = await Services.findOneAndUpdate(
+                { serviceName },
+                { $set: updates },
+                { new: true }
+            );
+
+            if (!updatedService) {
+                return res.status(404).json({ message: "Service not found" });
+            }
+
+            res.status(200).json({ message: "Service updated", updatedService });
         } catch (err) {
-            console.log(err);
+            res.status(500).json({ error: err.message });
         }
     }
 };

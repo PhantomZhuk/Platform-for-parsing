@@ -8,6 +8,9 @@ const router = express
     .post(`/fetchProductFromServices`, controllers.fetchProductFromServices)
     .post(`/addServiceVisit`, controllers.addVisit)
     .get(`/protected`, ...controllers.protected)
-    .get(`/refreshToken`, controllers.refresh);
+    .get(`/refreshToken`, controllers.refresh)
+    .post(`/signIn`, controllers.signIn)
+    .post(`/signUp`, controllers.signUp)
+    .post(`/mailConfirmation`, controllers.mailConfirmation)
 
 export default router;

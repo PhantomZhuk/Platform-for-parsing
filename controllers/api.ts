@@ -1,8 +1,10 @@
-import puppeteer, { Page } from "puppeteer";
+import puppeteer from "puppeteer";
 import * as cheerio from "cheerio";
 import { Services, User } from "../models/services";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import multer from 'multer'
+import nodemailer from 'nodemailer'
 
 const SECRET_KEY: string = process.env.SECRET_KEY!;
 const REFRESH_TOKEN_SECRET: string = process.env.REFRESH_TOKEN_SECRET!;
@@ -23,7 +25,14 @@ interface IRandimProduct {
     pageLink: string;
 }
 
-function authenticateToken(req, res, next) {
+interface ImailOptions {
+    from: string;
+    to: string;
+    subject: string;
+    text: string;
+}
+
+function authenticateToken(req, res, next): void {
     const token: string = req.headers[`authorization`]?.split(` `)[1];
     if (!token) return res.status(401).send({ message: "Access token required" })
 
@@ -33,6 +42,16 @@ function authenticateToken(req, res, next) {
         next();
     })
 }
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.GMAIL_LOGIN,
+        pass: process.env.GMAIL_PASSWORD
+    }
+})
+
+let randomCode: string;
 
 export default {
     getProductsFromSearch: async (req, res) => {
@@ -179,20 +198,85 @@ export default {
             console.log(err);
         }
     },
-    createUser: async (req, res) => {
+    mailConfirmation: async (req, res) => {
         try {
-            const { email, password } = req.body;
-            const token: string = jwt.sign({ email: email }, SECRET_KEY, { expiresIn: '15m' });
-            const refreshToken: string = jwt.sign({ email: email }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
-            const user = new User(
-                {
-                    email,
-                    password: await bcrypt.hashSync(password, 10),
+            const { email } = req.body;
+            randomCode = Math.floor(Math.random() * (999999 - 100000) + 100000).toString();
+            const mailOptions: ImailOptions = {
+                from: "Parser platform",
+                to: email,
+                subject: "Confirm your email",
+                text: randomCode
+            }
+
+            transporter.sendMail(mailOptions, (err, info) => {
+                if (err) {
+                    console.log(err);
+                    return res.status(500).json({
+                        error: 'Failed to send email'
+                    })
+                } else {
+                    console.log(`Message was sent: ${info.response}`)
+                    return res.status(200).json({
+                        message: 'Email sent successfully'
+                    })
                 }
-            );
-            await user.save();
-            res.json({ token, refreshToken });
+            })
         } catch (err) { console.log(err); }
+    },
+    signUp: async (req, res) => {
+        try {
+            const { login, email, password, userRandomCode } = req.body;
+            if (randomCode === userRandomCode) {
+                const token: string = jwt.sign({ login: login, email: email }, SECRET_KEY, { expiresIn: '15m' });
+                const refreshToken: string = jwt.sign({ login: login, email: email }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+                const user = new User(
+                    {
+                        login,
+                        email,
+                        password: await bcrypt.hashSync(password, 10),
+                    }
+                );
+                await user.save();
+                res.json({ token, refreshToken });
+            } else {
+                res.status(400).json({ message: "Invalid code" });
+            }
+        } catch (err) { console.log(err); }
+    },
+    signIn: async (req, res) => {
+        try {
+            const { login, password, email } = req.body;
+
+            if ((!login && !password) || !email) {
+                return res.status(400).json({ message: "All fields are required" });
+            }
+
+            if (login && password) {
+                const user = await User.findOne({ login });
+                const isPasswordValid = await bcrypt.compare(password, user!.password);
+                if (!user || !isPasswordValid) {
+                    return res.status(404).json({ message: "User not found" });
+                }
+
+                const token: string = jwt.sign({ login: login, email: email }, SECRET_KEY, { expiresIn: '15m' });
+                const refreshToken: string = jwt.sign({ login: login, email: email }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+                res.json({ token, refreshToken });
+            }else if (email && password) {
+                const user = await User.findOne({ email });
+                const isPasswordValid = await bcrypt.compare(password, user!.password);
+                if (!user || !isPasswordValid) {
+                    return res.status(404).json({ message: "User not found" });
+                }
+
+                const token: string = jwt.sign({ login: login, email: email }, SECRET_KEY, { expiresIn: '15m' });
+                const refreshToken: string = jwt.sign({ login: login, email: email }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+                res.json({ token, refreshToken });
+            }
+
+        } catch (err) {
+            console.log(err);
+        }
     },
     protected: [authenticateToken, async (req, res) => {
         res.json({ message: 'This is a secure route', user: req.user });
@@ -205,7 +289,7 @@ export default {
         }
 
         jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, (err, user: any) => {
-            if (err){
+            if (err) {
                 console.error('Refresh token verification error:', err);
                 return res.status(403).json({ message: "Invalid or expired refresh token" });
             }
