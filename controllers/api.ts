@@ -363,8 +363,20 @@ export default {
                 return res.status(401).json({ message: "Access token required" });
             }
             const userID = jwt.verify(token, SECRET_KEY) as { _id: string };
-            const user = await User.findOneAndDelete({ _id: userID._id });
+            await User.findOneAndDelete({ _id: userID._id });
             res.status(200).json({ message: "User deleted successfully" });
         } catch (err) { console.log(err) };
+    },
+    addProductFreezer: async (req, res) => {
+        try {
+            const token: string = req.cookies.token;
+            if (!token) {
+                return res.status(401).json({ message: "Access token required" });
+            }
+            const userID = jwt.verify(token, SECRET_KEY) as { _id: string };
+            const { product } = req.body;
+            const user = await User.findOneAndUpdate({ _id: userID._id }, { $push: { observedProducts: product } }, { new: true });
+            res.status(200).json({ user });
+        } catch (err) { console.log(err) }
     }
 }
