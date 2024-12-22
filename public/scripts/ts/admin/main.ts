@@ -28,16 +28,20 @@ void (async () => {
       const serviceInDB = services.find(
         (serviceInDB) => serviceInDB.serviceName === service.id
       );
-      if (!serviceInDB) return alert("Service not found");
+      if (!serviceInDB && service.id !== "") return alert("Service not found");
       switch (target.className) {
         case "service-fns__edit":
           return sections.services.startEditingService(service);
         case "service-fns__save":
-          return await sections.services.saveService(services);
+          return await sections.services.saveService(
+            services,
+            serviceInDB,
+            service.id === ""
+          );
         case "service-fns__delete":
           return await sections.services.deleteService(
             services,
-            serviceInDB,
+            serviceInDB!,
             service
           );
       }
@@ -45,6 +49,9 @@ void (async () => {
     sections.services.htmlEl
       .querySelector(".services__header-search-btn")!
       .addEventListener("click", () => sections.services.searchServices());
+    sections.services.htmlEl
+      .querySelector<HTMLInputElement>(".services__header-add")!
+      .addEventListener("click", () => sections.services.addService());
   } catch (e) {
     alert("Something went wrong");
     console.log(e);

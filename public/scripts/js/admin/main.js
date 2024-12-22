@@ -31,13 +31,13 @@ void (() => __awaiter(void 0, void 0, void 0, function* () {
                 if (target.className === "service-fns__cancel")
                     return sections.services.cancelEditingService();
                 const serviceInDB = services.find((serviceInDB) => serviceInDB.serviceName === service.id);
-                if (!serviceInDB)
+                if (!serviceInDB && service.id !== "")
                     return alert("Service not found");
                 switch (target.className) {
                     case "service-fns__edit":
                         return sections.services.startEditingService(service);
                     case "service-fns__save":
-                        return yield sections.services.saveService(services);
+                        return yield sections.services.saveService(services, serviceInDB, service.id === "");
                     case "service-fns__delete":
                         return yield sections.services.deleteService(services, serviceInDB, service);
                 }
@@ -46,6 +46,9 @@ void (() => __awaiter(void 0, void 0, void 0, function* () {
         sections.services.htmlEl
             .querySelector(".services__header-search-btn")
             .addEventListener("click", () => sections.services.searchServices());
+        sections.services.htmlEl
+            .querySelector(".services__header-add")
+            .addEventListener("click", () => sections.services.addService());
     }
     catch (e) {
         alert("Something went wrong");

@@ -47,9 +47,9 @@ interface ServiceInDBI {
     normalText: string;
     additionalText: string;
   };
-  visits: Array<{
+  visits?: Array<{
     date: string;
     count: number;
   }>;
-  _id: string;
+  _id?: string;
 }

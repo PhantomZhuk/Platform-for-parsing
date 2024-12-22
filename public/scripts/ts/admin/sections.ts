@@ -1,11 +1,13 @@
 type sectionNameT = "dashboard" | "users" | "services";
+const today = new Date();
+
 const DEFAULT_VISITS = [
+  { count: 1, date: today.toISOString().split("T")[0] },
   { count: 0, date: "" },
-  { count: 10, date: "" },
+  { count: 1, date: "" },
   { count: 0, date: "" },
-  { count: 30, date: "" },
-  { count: 20, date: "" },
-  { count: 15, date: "" },
+  { count: 1, date: "" },
+  { count: 0, date: "" },
 ];
 export default class Sections {
   dashboard: Dashboard = new Dashboard();
@@ -21,6 +23,9 @@ export default class Sections {
   switch(event: MouseEvent | null, sectionName: sectionNameT | null): void {
     if (!sectionName) sectionName = this.getSectionNameFromClick(event!);
     if (!sectionName) return;
+    if (this.services.servicesList.querySelector(`.editing`))
+      return alert("You can't change sections while editing a service");
+
     document
       .querySelectorAll<HTMLDivElement>(`[id*=template-]`)
       .forEach((section) => {
@@ -36,6 +41,14 @@ export default class Sections {
     return label.textContent!.trim().toLowerCase() as sectionNameT;
   }
 }
+function useSwitches(disable: boolean): void {
+  document
+    .querySelectorAll<HTMLInputElement>("[name=opened-section]")
+    .forEach((input) => {
+      input.disabled = disable;
+    });
+}
+
 class Dashboard {
   htmlEl: HTMLElement = document.getElementById(`template-dashboard`)!;
   servicesList: HTMLElement = this.htmlEl.querySelector(
@@ -44,7 +57,6 @@ class Dashboard {
   createServiceCard(serviceInDB: ServiceInDBI): string {
     const visits = serviceInDB.visits || DEFAULT_VISITS;
     const increase = visits[visits.length - 1].count - visits[0].count;
-    console.log(increase);
     const color = increase > 0 ? "rgb(89 255 0)" : "rgb(255 87 87)";
     const allAmount = visits.reduce((prev, v) => prev + v.count, 0);
     return /*html*/ `<li class="dashboard__service">
@@ -130,16 +142,18 @@ class Services {
   createServiceCardField(
     info: string,
     className: string,
-    description: string
+    description: string,
+    readonly: boolean = true
   ): string {
     return /*html*/ `
     <div>
       <span>${description}</span>
-      <textarea rows="1" type="text" data-info="${info}" class="services__item--${className}" readonly>${info}</textarea>
+      <textarea rows="1" type="text" data-info="${info}" class="services__item--${className}" 
+      ${readonly && "readonly"}>${info}</textarea>
     </div>
     `;
   }
-  createServiceCard(serviceInDB: ServiceInDBI): string {
+  createServiceCard(serviceInDB: ServiceInDBI, isNotEditing: boolean): string {
     return /*html*/ `
         <li id="${serviceInDB.serviceName}">
         <div class="service-fns"><div class="service-fns__standard"><button class="service-fns__edit">🖉</button><button class="service-fns__delete">🗑</button></div>
@@ -151,53 +165,68 @@ class Services {
         ${this.createServiceCardField(
           serviceInDB.serviceName,
           "name",
-          "Service name :"
+          "Service name :",
+          isNotEditing
         )}
-        ${this.createServiceCardField(serviceInDB.domain, "domain", "Domain :")}
+        ${this.createServiceCardField(
+          serviceInDB.domain,
+          "domain",
+          "Domain :",
+          isNotEditing
+        )}
         ${this.createServiceCardField(
           serviceInDB.html.name,
           "html__name",
-          "html name class :"
+          "html name class :",
+          isNotEditing
         )}
         ${this.createServiceCardField(
           serviceInDB.html.ul,
           "html__ul",
-          "html ul class :"
+          "html ul class :",
+          isNotEditing
         )}
         ${this.createServiceCardField(
           serviceInDB.html.image,
           "html__image",
-          "html image class :"
+          "html image class :",
+          isNotEditing
         )}
         ${this.createServiceCardField(
           serviceInDB.html.pageLink,
-          "html__link",
-          "html pageLink class :"
+          "html__pageLink",
+          "html pageLink class :",
+          isNotEditing
         )}
         ${this.createServiceCardField(
           serviceInDB.html.price,
           "html__price",
-          "html price class :"
+          "html price class :",
+          isNotEditing
         )}
         ${this.createServiceCardField(
           String(serviceInDB.html.availability.exists),
-          "html__availability-exists",
-          "Shows availability :"
+          "html__availability__exists",
+          "Shows availability :",
+          isNotEditing
         )}
         ${this.createServiceCardField(
           serviceInDB.html.availability.className,
-          "html__availability-class",
-          "Availability class :"
+          "html__availability__className",
+          "Availability class :",
+          isNotEditing
         )}
         ${this.createServiceCardField(
           serviceInDB.search.normalText,
-          "search__normal",
-          "Search normal text :"
+          "search__normalText",
+          "Search normal text :",
+          isNotEditing
         )}
         ${this.createServiceCardField(
           serviceInDB.search.additionalText,
-          "search__additional",
-          "Search additional text :"
+          "search__additionalText",
+          "Search additional text :",
+          isNotEditing
         )}
         </li>
         `;
@@ -209,31 +238,51 @@ class Services {
       `
       : servicesInDB.reduce(
           (prev: string, service: ServiceInDBI): string =>
-            prev + this.createServiceCard(service),
+            prev + this.createServiceCard(service, true),
           ""
         );
   }
-  async saveService(servicesInDB: ServiceInDBI[]): Promise<void> {
+  async saveService(
+    servicesInDB: ServiceInDBI[],
+    serviceInDB: ServiceInDBI | undefined,
+    newService: boolean = false
+  ): Promise<void> {
     if (!confirm("Are you sure about saving?")) return;
     const serviceChanges = this.getServiceChanges("request structure");
-    if (!Object.keys(serviceChanges).length) return alert("Nothing to save");
+    if (!Object.keys(serviceChanges).length && !newService)
+      return alert("Nothing to save");
     const serviceEl = this.servicesList.querySelector(".editing");
     if (!serviceEl) return alert("Get out of our console!");
-    const serviceInDB = servicesInDB.find(
-      (service) => service.serviceName === serviceEl.id
-    );
-    if (!serviceInDB) return alert("What are you saving?");
-    console.log(serviceChanges);
-    const res = await fetch(`/admin/updateServices/}`, {
-      method: "PUT",
+    if (!serviceInDB && !newService) return alert("What are you saving?");
+    if (!newService) {
+      console.log(serviceInDB!.serviceName, serviceChanges);
+      serviceChanges.serviceName = serviceChanges.name;
+      delete serviceChanges.name;
+      const res = await fetch(`/admin/updateServices/}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          previousName: serviceInDB!.serviceName,
+          ...serviceChanges,
+        }),
+      });
+      if (!res.ok) return alert("Something went wrong");
+      this.updateServiceWithStructure(serviceChanges, serviceInDB!);
+      return alert("Service saved");
+    }
+    serviceChanges.serviceName = serviceChanges.name;
+    delete serviceChanges.name;
+    const service = this.updateServiceWithStructure(serviceChanges);
+    const res = await fetch(`/admin/createServices`, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: serviceInDB.serviceName,
-        ...serviceChanges,
-      }),
+      body: JSON.stringify(service),
     });
-    if (!res.ok) return alert("Something went wrong");
-    this.updateServiceForClient(serviceChanges, serviceInDB);
+    if (!res.ok) {
+      console.log(await res.json());
+      return alert("Something went wrong");
+    }
+    servicesInDB.push(serviceChanges as any);
     return alert("Service saved");
   }
   async deleteService(
@@ -260,16 +309,19 @@ class Services {
     service.querySelectorAll("textarea").forEach((textarea) => {
       textarea.readOnly = false;
     });
+    useSwitches(true);
   }
   cancelEditingService(): void {
     const service = this.servicesList.querySelector(".editing");
     if (!service) return;
+    if (!service.id) return service.remove();
     service.removeAttribute("class");
     service.querySelectorAll("textarea").forEach((textarea) => {
       textarea.readOnly = true;
       if (textarea.value !== textarea.dataset.info!)
         textarea.value = textarea.dataset.info!;
     });
+    useSwitches(false);
   }
   getServiceChanges(way: "request structure"): { [key: string]: string };
   getServiceChanges(): Array<string> | { [key: string]: string } {
@@ -284,22 +336,41 @@ class Services {
       if (textArea.dataset.info === textArea.value) return;
       const key = textArea.className
         .replace("services__item--", "")
-        .replace("__", ".");
+        .replaceAll("__", ".");
       this[key] = textArea.value;
     },
     changes);
     return changes;
   }
-  updateServiceForClient(
+  updateServiceWithStructure(
     structure: { [key: string]: string },
-    serviceInDB: ServiceInDBI
-  ): void {
+    serviceInDB: ServiceInDBI = {
+      serviceName: "",
+      domain: "",
+      html: {
+        name: "",
+        availability: {
+          exists: false,
+          className: "",
+        },
+        ul: "",
+        image: "",
+        pageLink: "",
+        price: "",
+      },
+      search: {
+        normalText: "",
+        additionalText: "",
+      },
+    }
+  ): ServiceInDBI {
     /* structure may look like {"serviceName": string, "html.availability.exists":boolean,*/
     Object.keys(structure).forEach(function (key): any {
       const keyParts = key.split(".");
       if (keyParts.length === 1)
         return ((serviceInDB as any)[key] = structure[key]);
       function goToPath(obj: any, path: string) {
+        if (!path) return obj;
         const properties = path.split(".");
         const nextProperty = properties.shift()!;
         if (typeof obj[nextProperty] == "string")
@@ -308,6 +379,7 @@ class Services {
       }
       goToPath(serviceInDB, key);
     });
+    return serviceInDB;
   }
   searchServices(): void {
     const servicesEls =
@@ -317,5 +389,47 @@ class Services {
       if (searchRegex.test(serviceEl.id)) serviceEl.removeAttribute("style");
       else serviceEl.style.display = "none";
     });
+  }
+  addService(): void {
+    if (this.servicesList.querySelector(".editing")) return alert("Save first");
+    this.servicesList.insertAdjacentHTML(
+      "afterbegin",
+      this.createServiceCard(
+        {
+          serviceName: "",
+          html: {
+            name: "",
+            availability: {
+              exists: false,
+              className: "",
+            },
+            pageLink: "",
+            price: "",
+            ul: "",
+            image: "",
+          },
+          search: {
+            normalText: "",
+            additionalText: "",
+          },
+          _id: "",
+          domain: "",
+          visits: [
+            { count: 0, date: "" },
+            { count: 0, date: "" },
+            { count: 0, date: "" },
+            { count: 0, date: "" },
+            { count: 0, date: "" },
+            { count: 0, date: "" },
+          ],
+        },
+        false
+      )
+    );
+    this.servicesList.querySelector("li")!.className = "editing";
+    this.servicesList
+      .querySelector<HTMLTextAreaElement>("services__item--name")
+      ?.focus();
+    useSwitches(true);
   }
 }
