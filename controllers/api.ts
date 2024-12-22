@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import multer from 'multer'
 import nodemailer from 'nodemailer'
+import cookieParser from 'cookie-parser'
 
 const SECRET_KEY: string = process.env.SECRET_KEY!;
 const REFRESH_TOKEN_SECRET: string = process.env.REFRESH_TOKEN_SECRET!;
@@ -238,7 +239,18 @@ export default {
                     }
                 );
                 await user.save();
-                res.json({ token, refreshToken });
+                res.cookie('refreshToken', refreshToken, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: 'none',
+                    maxAge: 7 * 24 * 60 * 60 * 1000
+                })
+                    .cookie('token', token, {
+                        httpOnly: true,
+                        secure: true,
+                        sameSite: 'none',
+                        maxAge: 15 * 60 * 1000
+                    })
             } else {
                 res.status(400).json({ message: "Invalid code" });
             }
@@ -252,28 +264,29 @@ export default {
                 return res.status(400).json({ message: "All fields are required" });
             }
 
-            if (login && password) {
-                const user = await User.findOne({ login });
-                const isPasswordValid = await bcrypt.compare(password, user!.password);
-                if (!user || !isPasswordValid) {
-                    return res.status(404).json({ message: "User not found" });
-                }
+            const user = login
+                ? await User.findOne({ login })
+                : await User.findOne({ email });
 
-                const token: string = jwt.sign({ login: login, email: email }, SECRET_KEY, { expiresIn: '15m' });
-                const refreshToken: string = jwt.sign({ login: login, email: email }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
-                res.json({ token, refreshToken });
-            }else if (email && password) {
-                const user = await User.findOne({ email });
-                const isPasswordValid = await bcrypt.compare(password, user!.password);
-                if (!user || !isPasswordValid) {
-                    return res.status(404).json({ message: "User not found" });
-                }
-
-                const token: string = jwt.sign({ login: login, email: email }, SECRET_KEY, { expiresIn: '15m' });
-                const refreshToken: string = jwt.sign({ login: login, email: email }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
-                res.json({ token, refreshToken });
+            const isPasswordValid = await bcrypt.compare(password, user!.password);
+            if (!user || !isPasswordValid) {
+                return res.status(404).json({ message: "User not found" });
             }
 
+            const token: string = jwt.sign({ login: login, email: email }, SECRET_KEY, { expiresIn: '15m' });
+            const refreshToken: string = jwt.sign({ login: login, email: email }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none',
+                maxAge: 7 * 24 * 60 * 60 * 1000
+            })
+                .cookie('token', token, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: 'none',
+                    maxAge: 15 * 60 * 1000
+                })
         } catch (err) {
             console.log(err);
         }
@@ -295,7 +308,18 @@ export default {
             }
 
             const newToken: string = jwt.sign({ email: user.email }, SECRET_KEY, { expiresIn: '15m' });
-            res.json({ token: newToken });
+            res.cookie('token', newToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none',
+                maxAge: 15 * 60 * 1000
+            })
+                .cookie('refreshToken', refreshToken, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: 'none',
+                    maxAge: 7 * 24 * 60 * 60 * 1000
+                })
         })
     }
 }
