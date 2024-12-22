@@ -3,9 +3,7 @@ import * as cheerio from "cheerio";
 import { Services, User } from "../models/services";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import multer from 'multer'
 import nodemailer from 'nodemailer'
-import cookieParser from 'cookie-parser'
 
 const SECRET_KEY: string = process.env.SECRET_KEY!;
 const REFRESH_TOKEN_SECRET: string = process.env.REFRESH_TOKEN_SECRET!;
@@ -34,7 +32,7 @@ interface ImailOptions {
 }
 
 function authenticateToken(req, res, next): void {
-    const token: string = req.headers[`authorization`]?.split(` `)[1];
+    const token: string = req.cookies.token;
     if (!token) return res.status(401).send({ message: "Access token required" })
 
     jwt.verify(token, SECRET_KEY, (err, user) => {
@@ -231,14 +229,18 @@ export default {
             if (randomCode === userRandomCode) {
                 const token: string = jwt.sign({ login: login, email: email }, SECRET_KEY, { expiresIn: '15m' });
                 const refreshToken: string = jwt.sign({ login: login, email: email }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
-                const user = new User(
+                const user = await User.findOne({ email });
+                if (user) return res.status(400).json({ message: "User already exists" });
+                const newUser = new User(
                     {
                         login,
                         email,
                         password: bcrypt.hashSync(password, 10),
+                        photo: "",
+                        observedProducts: []
                     }
                 );
-                await user.save();
+                await newUser.save();
                 res.cookie('refreshToken', refreshToken, {
                     httpOnly: true,
                     secure: true,
@@ -273,8 +275,8 @@ export default {
                 return res.status(404).json({ message: "User not found" });
             }
 
-            const token: string = jwt.sign({ login: login, email: email }, SECRET_KEY, { expiresIn: '15m' });
-            const refreshToken: string = jwt.sign({ login: login, email: email }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+            const token: string = jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: '15m' });
+            const refreshToken: string = jwt.sign({ _id: user._id }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
                 secure: true,
@@ -295,7 +297,7 @@ export default {
         res.json({ message: 'This is a secure route', user: req.user });
     }],
     refresh: async (req, res) => {
-        const refreshToken: string = req.headers[`refresh-token`]?.split(` `)[1];
+        const refreshToken: string = req.cookies.refreshToken;
 
         if (!refreshToken) {
             return res.status(401).json({ message: "No refresh token provided" });
@@ -321,5 +323,48 @@ export default {
                     maxAge: 7 * 24 * 60 * 60 * 1000
                 })
         })
+    },
+    getUserInfo: async (req, res) => {
+        try {
+            const token: string = req.cookies.token;
+            if (!token) {
+                return res.status(401).json({ message: "Access token required" });
+            }
+            const userID = jwt.verify(token, SECRET_KEY) as { _id: string };
+            const user = await User.findOne({ _id: userID._id });
+            res.status(200).json({ user });
+        } catch (err) { console.log(err); }
+    },
+    logout: async (req, res) => {
+        res.cookie('token', '', { httpOnly: true, secure: true, sameSite: 'none', maxAge: 0 })
+            .cookie('refreshToken', '', { httpOnly: true, secure: true, sameSite: 'none', maxAge: 0 })
+    },
+    updateUserInfo: async (req, res) => {
+        try {
+            const token: string = req.cookies.token;
+            if (!token) {
+                return res.status(401).json({ message: "Access token required" });
+            }
+
+            const updateData = { ...req.body };
+            if (req.file) {
+                updateData.photo = req.file.path;
+            }
+
+            const userID = jwt.verify(token, SECRET_KEY) as { _id: string };
+            const user = await User.findOneAndUpdate({ _id: userID._id }, { updateData }, { new: true });
+            res.status(200).json({ user });
+        } catch (err) { console.log(err) };
+    },
+    deleteUser: async (req, res) => {
+        try {
+            const token: string = req.cookies.token;
+            if (!token) {
+                return res.status(401).json({ message: "Access token required" });
+            }
+            const userID = jwt.verify(token, SECRET_KEY) as { _id: string };
+            const user = await User.findOneAndDelete({ _id: userID._id });
+            res.status(200).json({ message: "User deleted successfully" });
+        } catch (err) { console.log(err) };
     }
 }

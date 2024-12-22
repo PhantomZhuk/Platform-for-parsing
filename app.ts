@@ -6,6 +6,7 @@ import adminRoutes from './routes/admin.js';
 import apiRoutes from './routes/api.js';
 import mainRoutes from './routes/main.js';
 import 'dotenv/config';
+import cookieParser from 'cookie-parser';
 dotenv.config();
 
 const PORT: number | string = process.env.PORT || 3000;
@@ -24,6 +25,7 @@ app.use(express.static("public"))
     .use('/admin', adminRoutes)
     .use('/api', apiRoutes)
     .use('/', mainRoutes)
+    .use(cookieParser())
     .listen(PORT, () => {
         console.log(`Listening on port ${PORT}`);
     });
