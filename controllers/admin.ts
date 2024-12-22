@@ -61,16 +61,7 @@ export default {
   },
   getServices: async (req, res) => {
     try {
-      const service = (await Services.find().lean<IServiceDocument[]>()).map(
-        (service) => {
-          delete service._id;
-          delete service.__v;
-          delete service.html._id;
-          delete service.search._id;
-          delete service.html.availability._id;
-          return service;
-        }
-      );
+      const service = await Services.find().lean<IServiceDocument[]>();
       res.json(service);
     } catch (err) {
       console.log(err);
@@ -78,11 +69,13 @@ export default {
   },
   deleteServices: async (req, res) => {
     try {
-      const serviceName = req.params.serviceName;
-      await Services.findOneAndDelete(serviceName);
-      res.sendStatus(200).send({ message: "Services deleted" });
+      const _id = req.params.id;
+      await Services.findByIdAndDelete(_id);
+      console.log(_id);
+      res.status(200).json({ message: "Services deleted" });
     } catch (err) {
       console.log(err);
+      res.status(500).json({ message: err });
     }
   },
   updateServices: async (req, res) => {

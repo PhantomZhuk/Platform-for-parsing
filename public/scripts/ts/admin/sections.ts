@@ -248,14 +248,13 @@ class Services {
     newService: boolean = false
   ): Promise<void> {
     if (!confirm("Are you sure about saving?")) return;
-    const serviceChanges = this.getServiceChanges("request structure");
+    const serviceChanges = this.getServiceChanges();
     if (!Object.keys(serviceChanges).length && !newService)
       return alert("Nothing to save");
     const serviceEl = this.servicesList.querySelector(".editing");
     if (!serviceEl) return alert("Get out of our console!");
     if (!serviceInDB && !newService) return alert("What are you saving?");
     if (!newService) {
-      console.log(serviceInDB!.serviceName, serviceChanges);
       serviceChanges.serviceName = serviceChanges.name;
       delete serviceChanges.name;
       const res = await fetch(`/admin/updateServices/}`, {
@@ -268,6 +267,16 @@ class Services {
       });
       if (!res.ok) return alert("Something went wrong");
       this.updateServiceWithStructure(serviceChanges, serviceInDB!);
+      for (const key in this.getServiceChanges()) {
+        const textAreaClassName =
+          "services__item--" + key.replaceAll(".", "__");
+        const textArea = serviceEl.querySelector(
+          `.${textAreaClassName}`
+        ) as HTMLTextAreaElement;
+        textArea.dataset.info = textArea.value;
+      }
+      serviceEl!.id = serviceInDB!.serviceName;
+      this.cancelEditingService();
       return alert("Service saved");
     }
     serviceChanges.serviceName = serviceChanges.name;
@@ -323,7 +332,7 @@ class Services {
     });
     useSwitches(false);
   }
-  getServiceChanges(way: "request structure"): { [key: string]: string };
+  getServiceChanges(): { [key: string]: string };
   getServiceChanges(): Array<string> | { [key: string]: string } {
     const textAreas = Array.from(
       this.servicesList.querySelector(".editing")!.querySelectorAll("textarea")
@@ -379,6 +388,7 @@ class Services {
       }
       goToPath(serviceInDB, key);
     });
+    console.log(serviceInDB);
     return serviceInDB;
   }
   searchServices(): void {

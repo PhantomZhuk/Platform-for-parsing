@@ -212,7 +212,7 @@ class Services {
         return __awaiter(this, arguments, void 0, function* (servicesInDB, serviceInDB, newService = false) {
             if (!confirm("Are you sure about saving?"))
                 return;
-            const serviceChanges = this.getServiceChanges("request structure");
+            const serviceChanges = this.getServiceChanges();
             if (!Object.keys(serviceChanges).length && !newService)
                 return alert("Nothing to save");
             const serviceEl = this.servicesList.querySelector(".editing");
@@ -221,7 +221,6 @@ class Services {
             if (!serviceInDB && !newService)
                 return alert("What are you saving?");
             if (!newService) {
-                console.log(serviceInDB.serviceName, serviceChanges);
                 serviceChanges.serviceName = serviceChanges.name;
                 delete serviceChanges.name;
                 const res = yield fetch(`/admin/updateServices/}`, {
@@ -232,6 +231,13 @@ class Services {
                 if (!res.ok)
                     return alert("Something went wrong");
                 this.updateServiceWithStructure(serviceChanges, serviceInDB);
+                for (const key in this.getServiceChanges()) {
+                    const textAreaClassName = "services__item--" + key.replaceAll(".", "__");
+                    const textArea = serviceEl.querySelector(`.${textAreaClassName}`);
+                    textArea.dataset.info = textArea.value;
+                }
+                serviceEl.id = serviceInDB.serviceName;
+                this.cancelEditingService();
                 return alert("Service saved");
             }
             serviceChanges.serviceName = serviceChanges.name;
@@ -336,6 +342,7 @@ class Services {
             }
             goToPath(serviceInDB, key);
         });
+        console.log(serviceInDB);
         return serviceInDB;
     }
     searchServices() {
