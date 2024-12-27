@@ -1,12 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link rel="stylesheet" href="/styles/css/index.css" />
-  </head>
-  <body>
-    <script defer src="/scripts/js/index.js"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link rel="stylesheet" href="/styles/css/index.css" />
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.js'
+    integrity='sha512-+k1pnlgt4F1H8L7t3z95o3/KO+o78INEcXTbnoJQ/F2VqDVhWoaiVml/OEHv9HsVgxUaVW+IbiZPUJQfF/YxZw=='
+    crossorigin='anonymous'></script>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.css'
+    integrity='sha512-GmZYQ9SKTnOea030Tbiat0Y+jhnYLIpsGAe6QTnToi8hI2nNbVMETHeK4wm4MuYMQdrc38x+sX77+kVD01eNsQ=='
+    crossorigin='anonymous' />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,regular,500,600,700,800,900,100italic,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic"
+    rel="stylesheet" />
+
+
+</head>
+
+<body>
+
+  <div class="spinerContainer">
+    <div class="spiner">
+      <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+        <circle class="spin" cx="400" cy="400" fill="none" r="200" stroke-width="50" stroke="#753efe"
+          stroke-dasharray="700 1400" stroke-linecap="round" />
+      </svg>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <header>
+      <h1>Parser platform</h1>
+      <button class="btncatalog" id="catalogBtn">
+        <i class="fa-solid fa-table-cells-large"></i>
+        <p class="language-btncatalog">Каталог</p>
+      </button>
+      <div class="searchContainer">
+        <input type="text" class="searchInput" placeholder="Пошук">
+        <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+      </div>
+      <button class="languageBtn">UA <i class="fa-solid fa-angle-down"></i></button>
+      <button id="trackableGoodsBtn"><i class="fa-solid fa-rectangle-list"></i></button>
+      <button id="userBtn"><i class="fa-solid fa-user"></i></button>
+    </header>
+    <main>
+      <div class="miniCatalogContainer">
+        <div class="catalogElement" id="leptops">Ноутбуки</div>
+        <div class="catalogElement" id="smartphones">Смартфони</div>
+        <div class="catalogElement" id="tablets">Планшети</div>
+        <div class="catalogElement" id="guns">Зброя</div>
+        <div class="catalogElement" id="clothingAndFootwear">Одяг і взуття</div>
+        <div class="catalogElement" id="householdGoods">Побутова техніка</div>
+        <div class="catalogElement" id="computers">Комп'ютери</div>
+        <div class="catalogElement" id="televisions">Телевізори</div>
+        <div class="catalogElement" id="businessProducts">Продукти для бізнесу</div>
+      </div>
+      <div class="randomProductContainer">
+        <h2>Популярні продукти</h2>
+        <div class="popularProductContainer"></div>
+      </div>
+      <div class="catalogProductContainer">
+          <h2 id="catalogTitle">Ноутбуки</h2>
+          <div class="productContainer"></div>
+        </div>
+    </main>
+  </div>
+
+  <script defer type="module" src="/scripts/js/index.js"></script>
+</body>
+
 </html>

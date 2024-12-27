@@ -178,6 +178,10 @@ const UsersSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  phon: {
+    type: String,
+    required: true,
+  },
   password: {
     type: String,
     required: true,

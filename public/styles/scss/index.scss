@@ -1,0 +1,316 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Montserrat";
+}
+
+$active-color: #ffffff;
+$inactive-color: #7e7d82;
+$elements-bg: #1f1f1f;
+$global-bg: #0d0d0d;
+$padding-inline: 21px;
+$medium-color: #d3d3d3;
+$active-aside-section: #753efe;
+$btn-color: #452497;
+
+.spinerContainer {
+    width: 100%;
+    height: 100vh;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background-color: $global-bg;
+    position: fixed;
+
+    .spiner {
+        width: 400px;
+        height: 400px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spin {
+            transform-origin: center;
+            animation: spin 2s linear infinite;
+        }
+    }
+}
+
+.wrap {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: $global-bg;
+
+    header {
+        width: 100%;
+        height: 10vh;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 100px;
+        background-color: $elements-bg;
+        color: $active-color;
+        border-bottom-right-radius: 20px;
+        box-shadow: 0 0 5px 2px $elements-bg;
+
+        h1 {
+            font-size: 1.7rem;
+            font-weight: 600;
+        }
+
+        .btncatalog {
+            padding: 12px 40px;
+            border: none;
+            background-color: $btn-color;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: $active-color;
+            border-radius: 10px;
+            font-size: 1rem;
+            box-shadow: 0 0 5px 1px $btn-color;
+            font-weight: 600;
+
+            i {
+                margin-right: 10px;
+            }
+
+            &:hover {
+                background-color: $active-aside-section;
+                box-shadow: 0 0 3px 1px $active-aside-section;
+            }
+        }
+
+        .searchContainer {
+            display: flex;
+            align-items: center;
+
+            input {
+                border: none;
+                border-radius: 10px;
+                background-color: $btn-color;
+                width: 500px;
+                height: 40px;
+                margin-right: 10px;
+                outline: none;
+                padding-left: 10px;
+                font-size: 1rem;
+                color: $active-color;
+                font-weight: 600;
+                box-shadow: 0 0 3px 0.5px $btn-color;
+
+                &::placeholder {
+                    color: $active-color;
+                }
+
+                &:hover {
+                    background-color: $active-aside-section;
+                    box-shadow: 0 0 3px 1px $active-aside-section;
+                }
+
+                &:focus {
+                    background-color: $active-aside-section;
+                    box-shadow: 0 0 3px 1px $active-aside-section;
+                }
+            }
+
+            button {
+                border: none;
+                border-radius: 10px;
+                background-color: $btn-color;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                color: $active-color;
+                font-weight: 600;
+                box-shadow: 0 0 5px 0.5px $btn-color;
+
+                &:hover {
+                    background-color: $active-aside-section;
+                    box-shadow: 0 0 3px 1px $active-aside-section;
+                }
+            }
+        }
+
+        #trackableGoodsBtn,
+        .languageBtn,
+        #userBtn {
+            border: none;
+            border-radius: 10px;
+            background-color: $btn-color;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: $active-color;
+            font-weight: 600;
+            box-shadow: 0 0 5px 1px $btn-color;
+
+            &:hover {
+                background-color: $active-aside-section;
+                box-shadow: 0 0 3px 1px $active-aside-section;
+            }
+        }
+
+        .languageBtn {
+            width: 50px;
+        }
+    }
+
+    main {
+        width: 100%;
+        min-height: 90vh;
+        display: flex;
+        justify-content: space-between;
+
+        .miniCatalogContainer {
+            width: 20%;
+            min-height: 90vh;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: $elements-bg;
+
+            .catalogElement {
+                color: $active-color;
+                width: 100%;
+                height: 50px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                font-weight: 600;
+                font-size: 1rem;
+                text-decoration: none;
+                border-radius: 10px;
+                margin: 5px 0;
+
+                &:hover {
+                    background-color: $active-aside-section;
+                    box-shadow: 0 0 3px 1px $active-aside-section;
+                }
+            }
+        }
+
+        .randomProductContainer {
+            width: 80%;
+            min-height: 90vh;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            h2 {
+                color: $active-color;
+                margin: 10px 0 20px 0;
+            }
+
+            .popularProductContainer {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+
+                .product {
+                    width: 350px;
+                    height: 500px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    align-items: center;
+                    background-color: $elements-bg;
+                    padding: 20px;
+                    border-radius: 10px;
+                    color: $active-color;
+                    margin: 10px;
+
+                    .imgBlock {
+                        width: 330px;
+                        height: 300px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        padding: 0 10px;
+                        background-color: $active-color;
+
+                        img {
+                            max-width: 330px;
+                            max-height: 300px;
+                            border-radius: 10px;
+                        }
+                    }
+
+                    .infoBlock {
+                        width: 100%;
+                        height: 200px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding-top: 10px;
+
+                        .name {
+                            font-size: 1rem;
+                            font-weight: 600;
+                            overflow: hidden;
+                            width: 100%;
+                            height: 60px;
+                            text-overflow: ellipsis;
+                        }
+
+                        .price {
+                            font-size: 0.9rem;
+                            font-weight: 600;
+                        }
+
+                        .goSite {
+                            padding: 10px 52px;
+                            border: none;
+                            border-radius: 10px;
+                            background-color: $btn-color;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            cursor: pointer;
+                            color: $active-color;
+                            font-weight: 600;
+                            box-shadow: 0 0 5px 1px $btn-color;
+                            font-size: 0.9rem;
+                            text-decoration: none;
+                        }
+                    }
+                }
+            }
+        }
+
+        .catalogProductContainer {
+            width: 80%;
+            min-height: 90vh;
+            padding: 10px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+
+            h2 {
+                color: $active-color;
+                margin: 10px 0 20px 0;
+            }
+        }
+    }
+}

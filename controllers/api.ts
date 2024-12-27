@@ -1,9 +1,13 @@
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-extra";
 import * as cheerio from "cheerio";
 import { Services, User } from "../models/services";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import nodemailer from 'nodemailer'
+import randomUseragent from "random-useragent";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
+
 
 const SECRET_KEY: string = process.env.SECRET_KEY!;
 const REFRESH_TOKEN_SECRET: string = process.env.REFRESH_TOKEN_SECRET!;
@@ -71,7 +75,7 @@ export default {
 
             await page.goto(finalUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
-            await page.waitForSelector(`.${service.html.ul}`, { visible: true, timeout: 60000 });
+            await page.waitForSelector(`${service.html.ul}`, { visible: true, timeout: 60000 });
 
             const html = await page.content();
             const $ = cheerio.load(html);
@@ -107,9 +111,19 @@ export default {
     },
     getRandomProducts: async (req, res) => {
         try {
-            const browser = await puppeteer.launch({ headless: false });
+            const browser = await puppeteer.launch({
+                headless: false,
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--window-size=10x10',
+                    '--disable-gpu',
+                    '--window-position=-10000,-10000',
+                ]
+            });
             const page = await browser.newPage();
-            await page.goto(`https://rozetka.com.ua/ua/promo/newyear/?gad_source=1&gclid=EAIaIQobChMI-P2gyemsigMVRLODBx287TcIEAAYASAAEgKYWPD_BwE`, { waitUntil: 'domcontentloaded', timeout: 60000 });
+            await page.goto(`https://rozetka.com.ua/ua/notebooks/c80004/`, { waitUntil: 'domcontentloaded', timeout: 60000 });
+            await new Promise((resolve) => setTimeout(resolve, 4000));
             await page.waitForSelector(`.catalog-grid`, { visible: true, timeout: 60000 });
             const html = await page.content();
             const $ = cheerio.load(html);
@@ -119,19 +133,19 @@ export default {
                 const price: string = $(element).find(`.goods-tile__price-value`).text().trim();
                 const photo: string = $(element).find(`.goods-tile__picture img`).attr('src')!;
                 const pageLink: string = $(element).find(`.product-link a`).attr('href')!;
-                if (data.length < 10) {
-                    data.push({
-                        productName,
-                        price,
-                        photo,
-                        pageLink,
-                    });
-                } else {
-                    return;
-                }
+                data.push({
+                    productName,
+                    price,
+                    photo,
+                    pageLink,
+                });
             });
 
-            res.json(data);
+            let filterData: IRandimProduct[] = data.filter(item =>
+                item.productName && item.price && item.pageLink && item.photo
+            );
+
+            res.json(filterData.length > 10 ? filterData.slice(0, 10) : filterData);
             await browser.close();
         } catch (err) {
             console.log(err);
@@ -225,7 +239,7 @@ export default {
     },
     signUp: async (req, res) => {
         try {
-            const { login, email, password, userRandomCode } = req.body;
+            const { login, email, phone, password, userRandomCode } = req.body;
             if (randomCode === userRandomCode) {
                 const token: string = jwt.sign({ login: login, email: email }, SECRET_KEY, { expiresIn: '15m' });
                 const refreshToken: string = jwt.sign({ login: login, email: email }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });

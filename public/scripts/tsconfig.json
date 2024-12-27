@@ -14,5 +14,5 @@
     "sourceMap": true,
     "outDir": "./js"
   },
-  "include": ["./ts", "ts/admin/all.d.ts"]
+  "include": ["./ts", "ts/all.d.ts"]
 }
