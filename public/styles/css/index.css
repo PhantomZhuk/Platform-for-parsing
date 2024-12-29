@@ -31,6 +31,109 @@
   animation: spin 2s linear infinite;
 }
 
+.addProductFreezerPopup {
+  width: 30%;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  background-color: #1f1f1f;
+  box-shadow: 0 0 5px 2px #6b6b6b;
+  z-index: 3;
+  padding: 20px;
+  border-radius: 20px 0 0 20px;
+}
+.addProductFreezerPopup .header {
+  width: 100%;
+  height: 5vh;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  font-size: 2rem;
+}
+.addProductFreezerPopup .header i {
+  cursor: pointer;
+}
+.addProductFreezerPopup .TrackProduct {
+  width: 100%;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.addProductFreezerPopup .TrackProduct .product {
+  width: 350px;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #0d0d0d;
+  padding: 20px;
+  border-radius: 10px;
+  color: #ffffff;
+  margin: 10px;
+}
+.addProductFreezerPopup .TrackProduct .product .imgBlock {
+  width: 330px;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 10px;
+  background-color: #ffffff;
+}
+.addProductFreezerPopup .TrackProduct .product .imgBlock img {
+  max-width: 330px;
+  max-height: 300px;
+  border-radius: 10px;
+}
+.addProductFreezerPopup .TrackProduct .product .infoBlock {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+}
+.addProductFreezerPopup .TrackProduct .product .infoBlock .name {
+  font-size: 1rem;
+  font-weight: 600;
+  overflow: hidden;
+  width: 100%;
+  height: 60px;
+  text-overflow: ellipsis;
+}
+.addProductFreezerPopup .TrackProduct .product .infoBlock .price {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.addProductFreezerPopup .TrackProduct .product .infoBlock .btnContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.addProductFreezerPopup .TrackProduct .product .infoBlock .btnContainer .track {
+  padding: 10px 52px;
+  border: none;
+  border-radius: 10px;
+  background-color: #452497;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 0 5px 1px #452497;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
 .wrap {
   width: 100%;
   min-height: 100vh;
@@ -50,6 +153,8 @@
   color: #ffffff;
   border-bottom-right-radius: 20px;
   box-shadow: 0 0 5px 2px #1f1f1f;
+  box-shadow: 0 0 3px 1px #6b6b6b;
+  z-index: 2;
 }
 .wrap header h1 {
   font-size: 1.7rem;
@@ -161,6 +266,7 @@
   flex-direction: column;
   align-items: center;
   background-color: #1f1f1f;
+  z-index: 1;
 }
 .wrap main .miniCatalogContainer .catalogElement {
   color: #ffffff;
@@ -242,12 +348,34 @@
   height: 60px;
   text-overflow: ellipsis;
 }
-.wrap main .randomProductContainer .popularProductContainer .product .infoBlock .price {
+.wrap main .randomProductContainer .popularProductContainer .product .infoBlock .btnContainer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.wrap main .randomProductContainer .popularProductContainer .product .infoBlock .btnContainer .price {
   font-size: 0.9rem;
   font-weight: 600;
 }
-.wrap main .randomProductContainer .popularProductContainer .product .infoBlock .goSite {
+.wrap main .randomProductContainer .popularProductContainer .product .infoBlock .btnContainer .goSite {
   padding: 10px 52px;
+  border: none;
+  border-radius: 10px;
+  background-color: #452497;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 0 5px 1px #452497;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+.wrap main .randomProductContainer .popularProductContainer .product .infoBlock .btnContainer .moreInfoBtn {
+  width: 40px;
+  height: 40px;
   border: none;
   border-radius: 10px;
   background-color: #452497;
@@ -272,4 +400,95 @@
 .wrap main .catalogProductContainer h2 {
   color: #ffffff;
   margin: 10px 0 20px 0;
+}
+.wrap main .catalogProductContainer .productContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.wrap main .catalogProductContainer .productContainer .product {
+  width: 350px;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1f1f1f;
+  padding: 20px;
+  border-radius: 10px;
+  color: #ffffff;
+  margin: 10px;
+}
+.wrap main .catalogProductContainer .productContainer .product .imgBlock {
+  width: 330px;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 10px;
+  background-color: #ffffff;
+}
+.wrap main .catalogProductContainer .productContainer .product .imgBlock img {
+  max-width: 330px;
+  max-height: 300px;
+  border-radius: 10px;
+}
+.wrap main .catalogProductContainer .productContainer .product .infoBlock {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+}
+.wrap main .catalogProductContainer .productContainer .product .infoBlock .name {
+  font-size: 1rem;
+  font-weight: 600;
+  overflow: hidden;
+  width: 100%;
+  height: 60px;
+  text-overflow: ellipsis;
+}
+.wrap main .catalogProductContainer .productContainer .product .infoBlock .btnContainer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.wrap main .catalogProductContainer .productContainer .product .infoBlock .btnContainer .price {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.wrap main .catalogProductContainer .productContainer .product .infoBlock .btnContainer .goSite {
+  padding: 10px 52px;
+  border: none;
+  border-radius: 10px;
+  background-color: #452497;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 0 5px 1px #452497;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+.wrap main .catalogProductContainer .productContainer .product .infoBlock .btnContainer .moreInfoBtn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  background-color: #452497;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 0 5px 1px #452497;
+  font-size: 0.9rem;
+  text-decoration: none;
 }/*# sourceMappingURL=index.css.map */

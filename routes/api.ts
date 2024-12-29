@@ -19,7 +19,7 @@ const router = express
     .get(`/protected`, ...controllers.protected)
     .get(`/refreshToken`, controllers.refresh)
     .get(`/getUserInfo`, controllers.getUserInfo)
-    .post(`/getProductsFromSearch`, controllers.getProductsFromSearch)
+    // .post(`/getProductsFromSearch`, controllers.getProductsFromSearch)
     .post(`/fetchProductFromServices`, controllers.fetchProductFromServices)
     .post(`/addServiceVisit`, controllers.addVisit)
     .post(`/signIn`, controllers.signIn)
@@ -29,5 +29,7 @@ const router = express
     .post(`/addProductFreezer` , controllers.addProductFreezer)
     .put(`/updateUserInfo`, upload.single('photo'), controllers.updateUserInfo)
     .delete(`/deleteUser`, controllers.deleteUser)
+    // .post("/goodSubscription", controllers.goodSubscription)
+    .post(`/getProductByUrl`, controllers.getProductByUrl);
 
 export default router;

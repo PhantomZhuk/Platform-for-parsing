@@ -13,6 +13,7 @@ $padding-inline: 21px;
 $medium-color: #d3d3d3;
 $active-aside-section: #753efe;
 $btn-color: #452497;
+$shadow-color: #6b6b6b;
 
 .spinerContainer {
     width: 100%;
@@ -43,6 +44,120 @@ $btn-color: #452497;
     }
 }
 
+.addProductFreezerPopup {
+    width: 30%;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    right: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    background-color: $elements-bg;
+    box-shadow: 0 0 5px 2px $shadow-color;
+    z-index: 3;
+    padding: 20px;
+    border-radius: 20px 0 0 20px;
+
+    .header {
+        width: 100%;
+        height: 5vh;
+        display: flex;
+        align-items: center;
+        color: #fff;
+        font-size: 2rem;
+
+        i {
+            cursor: pointer;
+        }
+    }
+
+    .TrackProduct {
+        width: 100%;
+        height: 90vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .product {
+            width: 350px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            background-color: $global-bg;
+            padding: 20px;
+            border-radius: 10px;
+            color: $active-color;
+            margin: 10px;
+
+            .imgBlock {
+                width: 330px;
+                height: 300px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 0 10px;
+                background-color: $active-color;
+
+                img {
+                    max-width: 330px;
+                    max-height: 300px;
+                    border-radius: 10px;
+                }
+            }
+
+            .infoBlock {
+                width: 100%;
+                height: 200px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 10px;
+
+                .name {
+                    font-size: 1rem;
+                    font-weight: 600;
+                    overflow: hidden;
+                    width: 100%;
+                    height: 60px;
+                    text-overflow: ellipsis;
+                }
+
+                .price {
+                    font-size: 0.9rem;
+                    font-weight: 600;
+                }
+
+                .btnContainer {
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    .track {
+                        padding: 10px 52px;
+                        border: none;
+                        border-radius: 10px;
+                        background-color: $btn-color;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        cursor: pointer;
+                        color: $active-color;
+                        font-weight: 600;
+                        box-shadow: 0 0 5px 1px $btn-color;
+                        font-size: 0.9rem;
+                        text-decoration: none;
+                    }
+                }
+            }
+        }
+    }
+}
+
 .wrap {
     width: 100%;
     min-height: 100vh;
@@ -62,6 +177,8 @@ $btn-color: #452497;
         color: $active-color;
         border-bottom-right-radius: 20px;
         box-shadow: 0 0 5px 2px $elements-bg;
+        box-shadow: 0 0 3px 1px $shadow-color;
+        z-index: 2;
 
         h1 {
             font-size: 1.7rem;
@@ -186,6 +303,7 @@ $btn-color: #452497;
             flex-direction: column;
             align-items: center;
             background-color: $elements-bg;
+            z-index: 1;
 
             .catalogElement {
                 color: $active-color;
@@ -274,25 +392,49 @@ $btn-color: #452497;
                             text-overflow: ellipsis;
                         }
 
-                        .price {
-                            font-size: 0.9rem;
-                            font-weight: 600;
-                        }
-
-                        .goSite {
-                            padding: 10px 52px;
-                            border: none;
-                            border-radius: 10px;
-                            background-color: $btn-color;
+                        .btnContainer {
+                            width: 100%;
                             display: flex;
+                            justify-content: space-between;
                             align-items: center;
-                            justify-content: center;
-                            cursor: pointer;
-                            color: $active-color;
-                            font-weight: 600;
-                            box-shadow: 0 0 5px 1px $btn-color;
-                            font-size: 0.9rem;
-                            text-decoration: none;
+
+                            .price {
+                                font-size: 0.9rem;
+                                font-weight: 600;
+                            }
+
+                            .goSite {
+                                padding: 10px 52px;
+                                border: none;
+                                border-radius: 10px;
+                                background-color: $btn-color;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                cursor: pointer;
+                                color: $active-color;
+                                font-weight: 600;
+                                box-shadow: 0 0 5px 1px $btn-color;
+                                font-size: 0.9rem;
+                                text-decoration: none;
+                            }
+
+                            .moreInfoBtn {
+                                width: 40px;
+                                height: 40px;
+                                border: none;
+                                border-radius: 10px;
+                                background-color: $btn-color;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                cursor: pointer;
+                                color: $active-color;
+                                font-weight: 600;
+                                box-shadow: 0 0 5px 1px $btn-color;
+                                font-size: 0.9rem;
+                                text-decoration: none;
+                            }
                         }
                     }
                 }
@@ -310,6 +452,107 @@ $btn-color: #452497;
             h2 {
                 color: $active-color;
                 margin: 10px 0 20px 0;
+            }
+
+            .productContainer {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+
+                .product {
+                    width: 350px;
+                    height: 500px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    align-items: center;
+                    background-color: $elements-bg;
+                    padding: 20px;
+                    border-radius: 10px;
+                    color: $active-color;
+                    margin: 10px;
+
+                    .imgBlock {
+                        width: 330px;
+                        height: 300px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        padding: 0 10px;
+                        background-color: $active-color;
+
+                        img {
+                            max-width: 330px;
+                            max-height: 300px;
+                            border-radius: 10px;
+                        }
+                    }
+
+                    .infoBlock {
+                        width: 100%;
+                        height: 200px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding-top: 10px;
+
+                        .name {
+                            font-size: 1rem;
+                            font-weight: 600;
+                            overflow: hidden;
+                            width: 100%;
+                            height: 60px;
+                            text-overflow: ellipsis;
+                        }
+
+                        .btnContainer {
+                            width: 100%;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+
+                            .price {
+                                font-size: 0.9rem;
+                                font-weight: 600;
+                            }
+
+                            .goSite {
+                                padding: 10px 52px;
+                                border: none;
+                                border-radius: 10px;
+                                background-color: $btn-color;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                cursor: pointer;
+                                color: $active-color;
+                                font-weight: 600;
+                                box-shadow: 0 0 5px 1px $btn-color;
+                                font-size: 0.9rem;
+                                text-decoration: none;
+                            }
+
+                            .moreInfoBtn {
+                                width: 40px;
+                                height: 40px;
+                                border: none;
+                                border-radius: 10px;
+                                background-color: $btn-color;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                cursor: pointer;
+                                color: $active-color;
+                                font-weight: 600;
+                                box-shadow: 0 0 5px 1px $btn-color;
+                                font-size: 0.9rem;
+                                text-decoration: none;
+                            }
+                        }
+                    }
+                }
             }
         }
     }

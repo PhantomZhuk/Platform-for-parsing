@@ -1,12 +1,80 @@
 import puppeteer from "puppeteer-extra";
 import * as cheerio from "cheerio";
-import { Services, User } from "../models/services";
+import { Services } from "../models/services";
+import { User } from "../models/users";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import nodemailer from 'nodemailer'
-import randomUseragent from "random-useragent";
-import StealthPlugin from "puppeteer-extra-plugin-stealth";
-import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
+import TelegramBot from "node-telegram-bot-api";
+// import randomUseragent from "random-useragent";
+// import StealthPlugin from "puppeteer-extra-plugin-stealth";
+// import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
+// const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN!, {
+//     polling: true,
+// })
+
+// bot.onText(/\/start/, async (msg) => {
+
+//     const chatId = msg.chat.id;
+
+//     // Кнопка для запиту номера телефону
+//     const keyboard = {
+//         reply_markup: {
+//             keyboard: [
+//                 [
+//                     {
+//                         text: "Надіслати номер телефону",
+//                         request_contact: true, // Запитує контакт
+//                     },
+//                 ],
+//             ],
+//             resize_keyboard: true, // Змінює розмір кнопок під екран користувача
+//             one_time_keyboard: true, // Закриває клавіатуру після вибору
+//         },
+//     };
+
+//     bot.sendMessage(
+//         chatId,
+//         "Будь ласка, надішліть ваш номер телефону:",
+//         keyboard
+//     );
+// });
+
+// // Обробляємо отримання контактів
+// bot.on("contact", async (msg) => {
+//     const contact = msg.contact;
+//     const chatId = msg.chat.id;
+
+//     if (contact) {
+//         const phoneNumber = contact.phone_number;
+//         const user = await User.findOne({ phone: phoneNumber }).lean();
+
+//         if (user) {
+//             bot.sendMessage(
+//                 chatId,
+//                 `Дякуємо! Ваш номер телефону: ${phoneNumber} і такого користувача знайдено в базі даних`
+//             );
+//         } else {
+//             bot.sendMessage(
+//                 chatId,
+//                 `Дякуємо! Ваш номер телефону: ${phoneNumber} і такого користувача не знайдено в базі даних`
+//             );
+//         }
+
+//         // Можете зберегти номер у базі даних тут
+//     }
+// });
+
+// // Додатковий обробник
+// bot.on("message", (msg) => {
+//     if (!msg.contact) {
+//         bot.sendMessage(
+//             msg.chat.id,
+//             "Натисніть на кнопку, щоб поділитися номером телефону."
+//         );
+//     }
+// });
+
 
 
 const SECRET_KEY: string = process.env.SECRET_KEY!;
@@ -22,6 +90,13 @@ interface IProduct {
 }
 
 interface IRandimProduct {
+    productName: string;
+    price: string;
+    photo: string;
+    pageLink: string;
+}
+
+interface IProducts {
     productName: string;
     price: string;
     photo: string;
@@ -57,58 +132,58 @@ const transporter = nodemailer.createTransport({
 let randomCode: string;
 
 export default {
-    getProductsFromSearch: async (req, res) => {
-        try {
-            const { searchText } = req.body;
-            const service = await Services.findOne({ domain: 'https://rozetka.com.ua/ua/' });
-            if (!service) throw new Error('Service not found');
+    // getProductsFromSearch: async (req, res) => {
+    //     try {
+    //         const { searchText } = req.body;
+    //         const service = await Services.findOne({ domain: 'https://rozetka.com.ua/ua/' });
+    //         if (!service) throw new Error('Service not found');
 
-            const browser = await puppeteer.launch({ headless: false });
-            const page = await browser.newPage();
+    //         const browser = await puppeteer.launch({ headless: false });
+    //         const page = await browser.newPage();
 
-            const initialUrl = `${service.domain}${service.search.normalText}${searchText}`;
-            await page.goto(initialUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
+    //         const initialUrl = `${service.domain}${service.search.normalText}${searchText}`;
+    //         await page.goto(initialUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
-            await new Promise((resolve) => setTimeout(resolve, 4000));
+    //         await new Promise((resolve) => setTimeout(resolve, 4000));
 
-            const finalUrl = page.url();
+    //         const finalUrl = page.url();
 
-            await page.goto(finalUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
+    //         await page.goto(finalUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
-            await page.waitForSelector(`${service.html.ul}`, { visible: true, timeout: 60000 });
+    //         await page.waitForSelector(`${service.html.ul}`, { visible: true, timeout: 60000 });
 
-            const html = await page.content();
-            const $ = cheerio.load(html);
+    //         const html = await page.content();
+    //         const $ = cheerio.load(html);
 
-            const data: IProduct[] = [];
-            $(`.${service.html.ul} li`).each((index, element) => {
-                const productName: string = $(element).find(`${service.html.name}`).text().trim();
-                const price: string = $(element).find(`${service.html.price}`).text().trim();
-                const photo: string = $(element).find(`${service.html.image} img`).attr('src')!;
-                const pageLink: string = $(element).find(`${service.html.pageLink}`).attr('href')!;
-                const exists: boolean = service.html.availability.exists;
-                const className: string = $(element).find(`${service.html.availability.className}`).text().trim();
-                data.push({
-                    productName,
-                    price,
-                    photo,
-                    pageLink,
-                    exists,
-                    className,
-                });
-            });
+    //         const data: IProduct[] = [];
+    //         $(`.${service.html.ul} li`).each((index, element) => {
+    //             const productName: string = $(element).find(`${service.html.name}`).text().trim();
+    //             const price: string = $(element).find(`${service.html.price}`).text().trim();
+    //             const photo: string = $(element).find(`${service.html.image} img`).attr('src')!;
+    //             const pageLink: string = $(element).find(`${service.html.pageLink}`).attr('href')!;
+    //             const exists: boolean = service.html.availability.exists;
+    //             const className: string = $(element).find(`${service.html.availability.className}`).text().trim();
+    //             data.push({
+    //                 productName,
+    //                 price,
+    //                 photo,
+    //                 pageLink,
+    //                 exists,
+    //                 className,
+    //             });
+    //         });
 
-            const filteredData = data.filter(item =>
-                item.productName && item.price && item.pageLink && item.photo
-            );
+    //         const filteredData = data.filter(item =>
+    //             item.productName && item.price && item.pageLink && item.photo
+    //         );
 
-            res.json(filteredData);
-            await browser.close();
-        } catch (err) {
-            console.error('Error:', err);
-            res.status(500).send({ error: 'Something went wrong', details: err.message });
-        }
-    },
+    //         res.json(filteredData);
+    //         await browser.close();
+    //     } catch (err) {
+    //         console.error('Error:', err);
+    //         res.status(500).send({ error: 'Something went wrong', details: err.message });
+    //     }
+    // },
     getRandomProducts: async (req, res) => {
         try {
             const browser = await puppeteer.launch({
@@ -122,7 +197,7 @@ export default {
                 ]
             });
             const page = await browser.newPage();
-            await page.goto(`https://rozetka.com.ua/ua/notebooks/c80004/`, { waitUntil: 'domcontentloaded', timeout: 60000 });
+            await page.goto(`https://rozetka.com.ua/ua/promo/newyear/?gad_source=1&gclid=EAIaIQobChMI-P2gyemsigMVRLODBx287TcIEAAYASAAEgKYWPD_BwE`, { waitUntil: 'domcontentloaded', timeout: 60000 });
             await new Promise((resolve) => setTimeout(resolve, 4000));
             await page.waitForSelector(`.catalog-grid`, { visible: true, timeout: 60000 });
             const html = await page.content();
@@ -145,11 +220,55 @@ export default {
                 item.productName && item.price && item.pageLink && item.photo
             );
 
-            res.json(filterData.length > 10 ? filterData.slice(0, 10) : filterData);
+            res.json(filterData.length > 12 ? filterData.slice(0, 12) : filterData);
             await browser.close();
         } catch (err) {
             console.log(err);
         }
+    },
+    getProductByUrl: async (req, res) => {
+        try {
+            const { url } = req.body;
+            if (!url) throw new Error('Url is required');
+            const service = await Services.findOne({ domain: 'https://rozetka.com.ua/ua/' });
+            if (!service) throw new Error('Service not found');
+            const browser = await puppeteer.launch({
+                headless: false,
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--window-size=10x10',
+                    '--disable-gpu',
+                    '--window-position=-10000,-10000',
+                ]
+            });
+            const page = await browser.newPage();
+            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+            await new Promise((resolve) => setTimeout(resolve, 4000));
+            await page.waitForSelector(service.html.ul, { visible: true, timeout: 60000 });
+            const html = await page.content();
+            const $ = cheerio.load(html);
+            const data: IProducts[] = [];
+            $(service.html.ul).each((index, element) => {
+                const productName: string = $(element).find(service.html.name).text().trim();
+                const price: string = $(element).find(service.html.price).text().trim();
+                const photo: string = $(element).find(service.html.image).attr('src')!;
+                const pageLink: string = $(element).find(service.html.pageLink).attr('href')!;
+                data.push({
+                    productName,
+                    price,
+                    photo,
+                    pageLink,
+                });
+            });
+
+            let filterData: IProducts[] = data.filter(item =>
+                item.productName && item.price && item.pageLink && item.photo
+            );
+
+            res.json(filterData);
+            await browser.close();
+        } catch (err) { console.log(err) };
     },
     fetchProductFromServices: async (req, res) => {
         try {
@@ -392,5 +511,18 @@ export default {
             const user = await User.findOneAndUpdate({ _id: userID._id }, { $push: { observedProducts: product } }, { new: true });
             res.status(200).json({ user });
         } catch (err) { console.log(err) }
-    }
+    },
+    // goodSubscription: async (req, res) => {
+    //     try {
+    //         console.log("here");
+    //         // const goodId = req.body.goodId;
+    //         res.json({ message: "Good subscription created" });
+    //         // await bot.sendMessage(
+    //         //   1998558386,
+    //         //   Створено нову відписку з товаром ${goodId}
+    //         // );
+    //     } catch (err) {
+    //         console.log(err);
+    //     }
+    // },
 }
