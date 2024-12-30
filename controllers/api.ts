@@ -6,6 +6,8 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import nodemailer from 'nodemailer'
 import TelegramBot from "node-telegram-bot-api";
+import dotenv from "dotenv";
+dotenv.config();
 // import randomUseragent from "random-useragent";
 // import StealthPlugin from "puppeteer-extra-plugin-stealth";
 // import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
@@ -124,10 +126,12 @@ function authenticateToken(req, res, next): void {
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.GMAIL_LOGIN,
-        pass: process.env.GMAIL_PASSWORD
+        user: process.env.GMAIL_LOGIN!,
+        pass: process.env.GMAIL_PASSWORD!
     }
 })
+
+// console.log(process.env.GMAIL_LOGIN, process.env.GMAIL_PASSWORD)
 
 let randomCode: string;
 
@@ -226,7 +230,7 @@ export default {
             console.log(err);
         }
     },
-    getProductByUrl: async (req, res) => {
+    getProductsByUrl: async (req, res) => {
         try {
             const { url } = req.body;
             if (!url) throw new Error('Url is required');
@@ -245,6 +249,15 @@ export default {
             const page = await browser.newPage();
             await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
             await new Promise((resolve) => setTimeout(resolve, 4000));
+            // await page.evaluate(async () => {
+            //     const distance = 200;
+            //     const delay = 250;
+
+            //     while ((document as any).scrollingElement.scrollTop + window.innerHeight < (document as any).scrollingElement.scrollHeight) {
+            //         (document as any).scrollingElement.scrollBy(0, distance);
+            //         await new Promise(resolve => setTimeout(resolve, delay));
+            //     }
+            // });
             await page.waitForSelector(service.html.ul, { visible: true, timeout: 60000 });
             const html = await page.content();
             const $ = cheerio.load(html);
@@ -369,7 +382,8 @@ export default {
                         login,
                         email,
                         password: bcrypt.hashSync(password, 10),
-                        photo: "",
+                        // photo: "",
+                        phone,
                         observedProducts: []
                     }
                 );
@@ -393,35 +407,30 @@ export default {
     },
     signIn: async (req, res) => {
         try {
-            const { login, password, email } = req.body;
+            const { email, password } = req.body;
 
-            if ((!login && !password) || !email) {
+            if ((!password) || !email) {
                 return res.status(400).json({ message: "All fields are required" });
             }
 
-            const user = login
-                ? await User.findOne({ login })
-                : await User.findOne({ email });
+            const user = await User.findOne({ email });
+
+            console.log(user);
 
             const isPasswordValid = await bcrypt.compare(password, user!.password);
             if (!user || !isPasswordValid) {
                 return res.status(404).json({ message: "User not found" });
             }
 
+            console.log(user, isPasswordValid);
+
             const token: string = jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: '15m' });
             const refreshToken: string = jwt.sign({ _id: user._id }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
-            res.cookie('refreshToken', refreshToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'none',
-                maxAge: 7 * 24 * 60 * 60 * 1000
-            })
-                .cookie('token', token, {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: 'none',
-                    maxAge: 15 * 60 * 1000
-                })
+            console.log(token, refreshToken);
+            res.cookie('refreshToken', refreshToken)
+                .cookie('token', token)
+                .status(200)
+                .json({ message: "Cookies set" });
         } catch (err) {
             console.log(err);
         }

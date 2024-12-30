@@ -30,6 +30,6 @@ const router = express
     .put(`/updateUserInfo`, upload.single('photo'), controllers.updateUserInfo)
     .delete(`/deleteUser`, controllers.deleteUser)
     // .post("/goodSubscription", controllers.goodSubscription)
-    .post(`/getProductByUrl`, controllers.getProductByUrl);
+    .post(`/getProductByUrl`, controllers.getProductsByUrl);
 
 export default router;

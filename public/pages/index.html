@@ -33,10 +33,43 @@
 
   <div class="addProductFreezerPopup">
     <div class="header">
-      <i class="fa-solid fa-xmark"></i>
+      <i class="fa-solid fa-xmark closeAddProductFreezerPopup"></i>
     </div>
     <div class="TrackProduct">
-      
+
+    </div>
+  </div>
+
+  <div class="authPopup">
+    <div class="header">
+      <i class="fa-solid fa-xmark closeAuthPopup"></i>
+    </div>
+    <div class="logInForm">
+      <h2>Log in</h2>
+      <input type="email" name="email" id="emailLogInInput" placeholder="Email">
+      <input type="password" name="password" id="passwordLogInInput" placeholder="Password">
+      <button id="logInBtn">Log in</button>
+      <p>If you don't have an account, you can <a id="openRegisterPopup">register</a>.</p>
+    </div>
+    <div class="registerForm">
+      <h2>Register</h2>
+      <input type="text" name="logIn" id="loginRegisterInput" placeholder="login">
+      <input type="email" name="email" id="emailRegisterInput" placeholder="Email">
+      <input type="tel" name="tel" id="telRegisterInput" placeholder="Phone">
+      <input type="password" name="password" id="passwordRegisterInput" placeholder="Password">
+      <button id="sendCodeOnEmail">Register</button>
+      <p>Already have an account? <a id="openLogInPopup">Log in</a>.</p>
+    </div>
+  </div>
+
+  <div class="verifyCodePopup">
+    <div class="header">
+      <i class="fa-solid fa-xmark closeVerifyCodePopup"></i>
+    </div>
+    <div class="verifyCodeForm">
+      <h2>Verify code</h2>
+      <input type="text" name="code" id="verifyCodeInput" placeholder="Code">
+      <button id="registerBtn">Register</button>
     </div>
   </div>
 
@@ -53,7 +86,7 @@
       </div>
       <button class="languageBtn">UA <i class="fa-solid fa-angle-down"></i></button>
       <button id="trackableGoodsBtn"><i class="fa-solid fa-rectangle-list"></i></button>
-      <button id="userBtn"><i class="fa-solid fa-user"></i></button>
+      <button id="userBtn" class="logIn">Log in</button>
     </header>
     <main>
       <div class="miniCatalogContainer">
@@ -66,17 +99,12 @@
         <div class="catalogElement" id="televisions">Телевізори</div>
         <div class="catalogElement" id="businessProducts">Продукти для бізнесу</div>
       </div>
-      <div class="randomProductContainer">
-        <h2>Популярні продукти</h2>
-        <div class="popularProductContainer"></div>
+      <div class="outerProductContainer">
+        <h2 id="catalogTitle"></h2>
+        <div class="productContainer"></div>
       </div>
-      <div class="catalogProductContainer">
-          <h2 id="catalogTitle"></h2>
-          <div class="productContainer"></div>
-        </div>
     </main>
   </div>
-
   <script defer type="module" src="/scripts/js/index.js"></script>
 </body>
 

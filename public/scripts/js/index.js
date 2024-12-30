@@ -10,12 +10,15 @@ const urlData = {
     televisions: `https://rozetka.com.ua/ua/all-tv/c80037/`,
     businessProducts: `https://rozetka.com.ua/ua/search/?text=%D0%9F%D1%80%D0%BE%D0%B4%D1%83%D0%BA%D1%82%D0%B8%20%D0%B4%D0%BB%D1%8F%20%D0%B1%D1%96%D0%B7%D0%BD%D0%B5%D1%81%D1%83`,
 };
-axios.get("/api/getRandomProducts")
-    .then((res) => {
-    let id = 0;
-    res.data.forEach((el) => {
-        data.push(el);
-        $(".popularProductContainer").append(`
+function getRandomProducts() {
+    axios.get("/api/getRandomProducts")
+        .then((res) => {
+        let id = 0;
+        data = [];
+        $(".productContainer").empty();
+        res.data.forEach((el) => {
+            data.push(el);
+            $(".productContainer").append(`
                 <div class="product" id="${id}">
                     <div class="imgBlock">
                         <img src="${el.photo}" alt="${el.productName}">
@@ -30,22 +33,26 @@ axios.get("/api/getRandomProducts")
                     </div>
                 </div>
             `);
-        id++;
-    });
-    data.forEach((el, index) => {
-        el.id = index;
-    });
-    $(".spinerContainer").css("display", "none");
-})
-    .catch((error) => console.log(error));
-$(".popularProductContainer").on("click", ".goSite", function () {
+            id++;
+        });
+        data.forEach((el, index) => {
+            el.id = index;
+        });
+        $(".spinerContainer").css("display", "none");
+        $(`#catalogTitle`).text("Популярні продукти");
+    })
+        .catch((error) => console.log(error));
+}
+getRandomProducts();
+$(".productContainer").on("click", ".goSite", function () {
     const ID = $(this).attr("id");
     axios.post(`/api/addServiceVisit`, { serviceName: `Rozetka` })
         .then((res) => console.log(res));
     window.location.href = ID;
 });
-$(".popularProductContainer").on("click", ".moreInfoBtn", function () {
+$(".productContainer").on("click", ".moreInfoBtn", function () {
     const ID = $(this).attr("id");
+    console.log(data);
     data.forEach((el) => {
         if (el.id === parseInt(ID)) {
             $(".TrackProduct").empty();
@@ -67,7 +74,7 @@ $(".popularProductContainer").on("click", ".moreInfoBtn", function () {
         }
     });
 });
-$(`.header i`).on(`click`, () => {
+$(`.closeAddProductFreezerPopup`).on(`click`, () => {
     $(`.addProductFreezerPopup`).css(`display`, `none`);
 });
 $(".TrackProduct").on("click", ".track", function () {
@@ -79,10 +86,16 @@ $(".catalogElement").on("click", function () {
     const ID = $(this).attr("id");
     let id = 0;
     data = [];
+    let i = 0;
+    let timer = setInterval(() => {
+        i++;
+        console.log(i);
+    }, 1000);
     axios.post(`/api/getProductByUrl/`, { url: urlData[ID] })
         .then((res) => {
         $(".productContainer").empty();
         res.data.forEach((el) => {
+            data.push(el);
             $(".productContainer").append(`
                     <div class="product" id="${id}">
                         <div class="imgBlock">
@@ -91,7 +104,7 @@ $(".catalogElement").on("click", function () {
                         <div class="infoBlock">
                             <div class="name">${el.productName}</div>
                             <div class="price">${el.price}</div>
-                            <div class="addToCart">
+                            <div class="btnContainer">
                                 <button class="goSite" id="${id}">Перейти на сайт</button>
                                 <div class="moreInfoBtn" id="${id}"><i class="fa-solid fa-ellipsis-vertical"></i></div>
                             </div>
@@ -106,6 +119,64 @@ $(".catalogElement").on("click", function () {
         $(".randomProductContainer").css("display", "none");
         $(".catalogProductContainer").css("display", "flex");
         $(`.catalogTitle`).text(urlData[ID]);
+        clearInterval(timer);
+    });
+});
+$(`#openRegisterPopup`).on(`click`, () => {
+    $(`.registerForm`).css(`display`, `flex`);
+    $(`.logInForm`).css(`display`, `none`);
+});
+$(`#openLogInPopup`).on(`click`, () => {
+    $(`.registerForm`).css(`display`, `none`);
+    $(`.logInForm`).css(`display`, `flex`);
+});
+$(`.closeAuthPopup`).on(`click`, () => {
+    $(`.registerForm`).css(`display`, `none`);
+    $(`.logInForm`).css(`display`, `flex`);
+    $(`.authPopup`).css(`display`, `none`);
+    $(`.wrap`).css(`filter`, `blur(0)`);
+});
+$(`#userBtn`).on(`click`, () => {
+    if ($(`#userBtn`).hasClass(`logIn`)) {
+        $(`.authPopup`).css(`display`, `flex`);
+        $(`.wrap`).css(`filter`, `blur(1.5px)`);
+    }
+    else if ($(`#userBtn`).hasClass(`openUserInfo`)) {
+    }
+});
+$(`#logInBtn`).on(`click`, () => {
+    console.log($(`#emailLogInInput`).val(), $(`#passwordLogInInput`).val());
+    axios.post(`/api/signIn`, { email: $(`#emailLogInInput`).val(), password: $(`#passwordLogInInput`).val() })
+        .then((res) => {
+        $(`.authPopup`).css(`display`, `none`);
+        $(`.wrap`).css(`filter`, `blur(0)`);
+        $(`#userBtn`).removeClass(`logIn`);
+        $(`#userBtn`).addClass(`openUserInfo`);
+        $(`#userBtn`).html(`<i class="fa-solid fa-user"></i>`);
+        console.log(res.data);
+    })
+        .catch((err) => {
+        console.log(err);
+    });
+});
+$(`#sendCodeOnEmail`).on(`click`, () => {
+    axios.post(`/api/mailConfirmation`, { email: $(`#emailRegisterInput`).val() })
+        .then((res) => {
+        $(`.authPopup`).css(`display`, `none`);
+        $(`.verifyCodePopup`).css(`display`, `flex`);
+        $(`.wrap`).css(`filter`, `blur(1.5px)`);
+        console.log(res.data);
+    });
+});
+$(`#registerBtn`).on(`click`, () => {
+    axios.post(`/api/signUp`, { login: $(`#loginRegisterInput`).val(), email: $(`#emailRegisterInput`).val(), password: $(`#passwordRegisterInput`).val(), phone: $(`#telRegisterInput`).val(), userRandomCode: $(`#verifyCodeInput`).val() })
+        .then((res) => {
+        $(`.verifyCodePopup`).css(`display`, `none`);
+        $(`.wrap`).css(`filter`, `blur(0)`);
+        $(`#userBtn`).removeClass(`logIn`);
+        $(`#userBtn`).addClass(`openUserInfo`);
+        $(`#userBtn`).html(`<i class="fa-solid fa-user"></i>`);
+        console.log(res.data);
     });
 });
 //# sourceMappingURL=index.js.map
