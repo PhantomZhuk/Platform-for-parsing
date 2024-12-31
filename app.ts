@@ -21,11 +21,14 @@ const app = express();
 app.use(express.static("public"))
     .use(express.urlencoded({ extended: true }))
     .use(express.json())
-    .use(cors())
+    .use(cookieParser())
+    .use(cors({
+        origin: 'http://localhost:3000',
+        credentials: true
+    }))
     .use('/admin', adminRoutes)
     .use('/api', apiRoutes)
     .use('/', mainRoutes)
-    .use(cookieParser())
     .listen(PORT, () => {
         console.log(`Listening on port ${PORT}`);
     });

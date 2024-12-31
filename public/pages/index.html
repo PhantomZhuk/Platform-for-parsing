@@ -16,8 +16,9 @@
   <link
     href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,regular,500,600,700,800,900,100italic,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic"
     rel="stylesheet" />
-
-
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js'
+    integrity='sha512-aUhL2xOCrpLEuGD5f6tgHbLYEXRpYZ8G5yD+WlFrXrPy2IrWBlu6bih5C9H6qGsgqnU6mgx6KtU8TreHpASprw=='
+    crossorigin='anonymous'></script>
 </head>
 
 <body>
@@ -71,6 +72,36 @@
       <input type="text" name="code" id="verifyCodeInput" placeholder="Code">
       <button id="registerBtn">Register</button>
     </div>
+  </div>
+
+  <div class="userAccountContainer">
+    <header>
+      <h1>Parser platform</h1>
+      <button class="btncatalog" id="catalogBtn">
+        <i class="fa-solid fa-table-cells-large"></i>
+        <p class="language-btncatalog">Каталог</p>
+      </button>
+      <div class="searchContainer">
+        <input type="text" class="searchInput" placeholder="Пошук">
+        <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+      </div>
+      <button class="languageBtn">UA <i class="fa-solid fa-angle-down"></i></button>
+      <button id="trackableGoodsBtnFake"><i class="fa-solid fa-rectangle-list"></i></button>
+      <i class="fa-solid fa-xmark closeUserAccountContainer"></i>
+    </header>
+    <main class="userInfoContainer">
+      <div class="userInfoContainer">
+        <div class="photoContainer">
+          <img src="https://static-00.iconduck.com/assets.00/user-circle-icon-2048x2048-rbk3fbd1.png" alt="User photo">
+        </div>
+        <div class="infoContainer">
+          <div class="userName"></div>
+          <div class="userEmail"></div>
+          <div class="userPhone"></div>
+          <button id="editProfileBtn">Edit profile</button>
+        </div>
+      </div>
+    </main>
   </div>
 
   <div class="wrap">

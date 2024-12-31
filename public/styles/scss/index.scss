@@ -345,7 +345,7 @@ $shadow-color: #6b6b6b;
     padding: 20px;
     border-radius: 20px;
     z-index: 10;
-    
+
     .header {
         width: 100%;
         display: flex;
@@ -413,10 +413,252 @@ $shadow-color: #6b6b6b;
     }
 }
 
-.wrap {
+.userAccountContainer {
     width: 100%;
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: $global-bg;
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    header {
+        width: 100%;
+        height: 10vh;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 100px;
+        background-color: $elements-bg;
+        color: $active-color;
+        border-bottom-right-radius: 20px;
+        box-shadow: 0 0 5px 2px $elements-bg;
+        box-shadow: 0 0 3px 1px $shadow-color;
+        z-index: 2;
+
+        h1 {
+            font-size: 1.7rem;
+            font-weight: 600;
+        }
+
+        .btncatalog {
+            padding: 12px 40px;
+            border: none;
+            background-color: $btn-color;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: $active-color;
+            border-radius: 10px;
+            font-size: 1rem;
+            box-shadow: 0 0 5px 1px $btn-color;
+            font-weight: 600;
+
+            i {
+                margin-right: 10px;
+            }
+
+            &:hover {
+                background-color: $active-aside-section;
+                box-shadow: 0 0 3px 1px $active-aside-section;
+            }
+        }
+
+        .searchContainer {
+            display: flex;
+            align-items: center;
+
+            input {
+                border: none;
+                border-radius: 10px;
+                background-color: $btn-color;
+                width: 500px;
+                height: 40px;
+                margin-right: 10px;
+                outline: none;
+                padding-left: 10px;
+                font-size: 1rem;
+                color: $active-color;
+                font-weight: 600;
+                box-shadow: 0 0 3px 0.5px $btn-color;
+
+                &::placeholder {
+                    color: $active-color;
+                }
+
+                &:hover {
+                    background-color: $active-aside-section;
+                    box-shadow: 0 0 3px 1px $active-aside-section;
+                }
+
+                &:focus {
+                    background-color: $active-aside-section;
+                    box-shadow: 0 0 3px 1px $active-aside-section;
+                }
+            }
+
+            button {
+                border: none;
+                border-radius: 10px;
+                background-color: $btn-color;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                color: $active-color;
+                font-weight: 600;
+                box-shadow: 0 0 5px 0.5px $btn-color;
+
+                &:hover {
+                    background-color: $active-aside-section;
+                    box-shadow: 0 0 3px 1px $active-aside-section;
+                }
+            }
+        }
+
+        #trackableGoodsBtnFake,
+        .languageBtn {
+            border: none;
+            border-radius: 10px;
+            background-color: $btn-color;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: $active-color;
+            font-weight: 600;
+            box-shadow: 0 0 5px 1px $btn-color;
+
+            &:hover {
+                background-color: $active-aside-section;
+                box-shadow: 0 0 3px 1px $active-aside-section;
+            }
+        }
+
+        .closeUserAccountContainer {
+            border: none;
+            border-radius: 10px;
+            background-color: $btn-color;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: $active-color;
+            font-weight: 600;
+            font-size: 1.3rem;
+            box-shadow: 0 0 5px 1px $btn-color;
+
+            &:hover {
+                background-color: $active-aside-section;
+                box-shadow: 0 0 3px 1px $active-aside-section;
+            }
+        }
+
+        .languageBtn {
+            width: 50px;
+        }
+    }
+
+    main {
+        width: 100%;
+        min-height: 90vh;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 100px;
+
+        .userInfoContainer {
+            width: 60%;
+            min-height: 85vh;
+            display: flex;
+            justify-content: space-between;
+            background-color: $elements-bg;
+            border-radius: 20px;
+
+            .photoContainer {
+                width: 40%;
+                min-height: 85vh;
+                display: flex;
+                justify-content: center;
+                padding-top: 50px;
+
+                img {
+                    width: 300px;
+                    height: 300px;
+                    border-radius: 50%;
+                    background-color: #fff;
+
+                    &:hover {
+                        background-color: $active-aside-section;
+                    }
+                }
+            }
+
+            .infoContainer {
+                width: 60%;
+                min-height: 85vh;
+                display: flex;
+                flex-direction: column;
+                padding: 100px 20px 0 20px;
+
+                .userName,
+                .userEmail,
+                .userPhone {
+                    width: 100%;
+                    height: 50px;
+                    display: flex;
+                    align-items: center;
+                    font-weight: 600;
+                    font-size: 1.3rem;
+                    color: $active-color;
+
+                    span {
+                        // color: $active-color;
+                        margin-left: 10px;
+                        color: $btn-color;
+
+                        &:hover {
+                            color: $active-aside-section;
+                        }
+                    }
+                }
+
+                #editProfileBtn {
+                    border: none;
+                    border-radius: 10px;
+                    background-color: $btn-color;
+                    padding: 14px 120px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    color: $active-color;
+                    font-weight: 600;
+                    box-shadow: 0 0 5px 1px $btn-color;
+                    margin: 50px 0;
+                    font-size: 1.1rem;
+
+                    &:hover {
+                        background-color: $active-aside-section;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.wrap {
+    width: 100%;
+    min-height: 100vh;
+    display: none;
     flex-direction: column;
     align-items: center;
     background-color: $global-bg;

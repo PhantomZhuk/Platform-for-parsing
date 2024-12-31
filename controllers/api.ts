@@ -7,7 +7,10 @@ import bcrypt from "bcryptjs";
 import nodemailer from 'nodemailer'
 import TelegramBot from "node-telegram-bot-api";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 dotenv.config();
+
+cookieParser();
 // import randomUseragent from "random-useragent";
 // import StealthPlugin from "puppeteer-extra-plugin-stealth";
 // import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
@@ -112,15 +115,30 @@ interface ImailOptions {
     text: string;
 }
 
-function authenticateToken(req, res, next): void {
-    const token: string = req.cookies.token;
-    if (!token) return res.status(401).send({ message: "Access token required" })
+async function authenticateToken(req, res, next): Promise<void> {
+    if (!req.cookies || !req.cookies.token) {
+        return res.status(401).send({ message: "Access token required" });
+    }
 
-    jwt.verify(token, SECRET_KEY, (err, user) => {
-        if (err) return res.status(403).json({ message: "Invalid or expired token" });
-        req.user = user;
-        next();
-    })
+    const token: string = req.cookies.token;
+
+    jwt.verify(token, SECRET_KEY, async (err, user: any) => {
+        if (err) {
+            return res.status(403).json({ message: "Invalid or expired token" });
+        }
+
+        try {
+            const userInfo = await User.findOne({ _id: user._id });
+            if (!userInfo) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
+            req.user = userInfo;
+            next();
+        } catch (error) {
+            return res.status(500).json({ message: "Error retrieving user data", error });
+        }
+    });
 }
 
 const transporter = nodemailer.createTransport({
@@ -130,8 +148,6 @@ const transporter = nodemailer.createTransport({
         pass: process.env.GMAIL_PASSWORD!
     }
 })
-
-// console.log(process.env.GMAIL_LOGIN, process.env.GMAIL_PASSWORD)
 
 let randomCode: string;
 
@@ -388,18 +404,10 @@ export default {
                     }
                 );
                 await newUser.save();
-                res.cookie('refreshToken', refreshToken, {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: 'none',
-                    maxAge: 7 * 24 * 60 * 60 * 1000
-                })
-                    .cookie('token', token, {
-                        httpOnly: true,
-                        secure: true,
-                        sameSite: 'none',
-                        maxAge: 15 * 60 * 1000
-                    })
+                res.cookie('refreshToken', refreshToken)
+                    .cookie('token', token)
+                    .status(200)
+                    .json({ message: "Cookies set" });
             } else {
                 res.status(400).json({ message: "Invalid code" });
             }
@@ -415,18 +423,13 @@ export default {
 
             const user = await User.findOne({ email });
 
-            console.log(user);
-
             const isPasswordValid = await bcrypt.compare(password, user!.password);
             if (!user || !isPasswordValid) {
                 return res.status(404).json({ message: "User not found" });
             }
 
-            console.log(user, isPasswordValid);
-
             const token: string = jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: '15m' });
             const refreshToken: string = jwt.sign({ _id: user._id }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
-            console.log(token, refreshToken);
             res.cookie('refreshToken', refreshToken)
                 .cookie('token', token)
                 .status(200)
@@ -438,7 +441,7 @@ export default {
     protected: [authenticateToken, async (req, res) => {
         res.json({ message: 'This is a secure route', user: req.user });
     }],
-    refresh: async (req, res) => {
+    refreshToken: async (req, res) => {
         const refreshToken: string = req.cookies.refreshToken;
 
         if (!refreshToken) {
@@ -451,28 +454,19 @@ export default {
                 return res.status(403).json({ message: "Invalid or expired refresh token" });
             }
 
-            const newToken: string = jwt.sign({ email: user.email }, SECRET_KEY, { expiresIn: '15m' });
-            res.cookie('token', newToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'none',
-                maxAge: 15 * 60 * 1000
-            })
-                .cookie('refreshToken', refreshToken, {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: 'none',
-                    maxAge: 7 * 24 * 60 * 60 * 1000
-                })
+            const token: string = jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: '15m' });
+            res.cookie('token', token)
+                .status(200)
+                .json({ message: "Cookies set" });
         })
     },
     getUserInfo: async (req, res) => {
         try {
-            const token: string = req.cookies.token;
-            if (!token) {
+            const refreshToken: string = req.cookies.refreshToken;
+            if (!refreshToken) {
                 return res.status(401).json({ message: "Access token required" });
             }
-            const userID = jwt.verify(token, SECRET_KEY) as { _id: string };
+            const userID = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET) as { _id: string };
             const user = await User.findOne({ _id: userID._id });
             res.status(200).json({ user });
         } catch (err) { console.log(err); }

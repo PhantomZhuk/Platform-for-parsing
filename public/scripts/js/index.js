@@ -1,5 +1,29 @@
 "use strict";
 let data = [];
+function registrationCheck() {
+    axios.get('/api/protected', { withCredentials: true })
+        .then(res => {
+        console.log(res.data);
+        $(`#userBtn`).removeClass(`logIn`);
+        $(`#userBtn`).addClass(`openUserInfo`);
+        $(`#userBtn`).html(`<i class="fa-solid fa-user"></i>`);
+        $(`#userBtn`).css(`width`, `40px`);
+        $(`.userName`).html(`Name: <span> ${res.data.user.login}</span>`);
+        $(`.userEmail`).html(`Email: <span> ${res.data.user.email}</span>`);
+        $(`.userPhone`).html(`Phone: <span> ${res.data.user.phone}</span>`);
+    })
+        .catch(err => {
+        axios.post('/api/refreshToken', {}, { withCredentials: true })
+            .then(res => {
+            console.log(`Refresh token: ${res.data.refreshToken}`);
+            console.log(res.data);
+            registrationCheck();
+        })
+            .catch(err => console.error(err));
+        console.log(err);
+    });
+}
+registrationCheck();
 const urlData = {
     laptops: `https://rozetka.com.ua/ua/notebooks/c80004/`,
     smartphones: `https://rozetka.com.ua/ua/mobile-phones/c80003/`,
@@ -43,7 +67,7 @@ function getRandomProducts() {
     })
         .catch((error) => console.log(error));
 }
-getRandomProducts();
+// getRandomProducts();
 $(".productContainer").on("click", ".goSite", function () {
     const ID = $(this).attr("id");
     axios.post(`/api/addServiceVisit`, { serviceName: `Rozetka` })
@@ -153,6 +177,7 @@ $(`#logInBtn`).on(`click`, () => {
         $(`#userBtn`).removeClass(`logIn`);
         $(`#userBtn`).addClass(`openUserInfo`);
         $(`#userBtn`).html(`<i class="fa-solid fa-user"></i>`);
+        $(`#userBtn`).css(`width`, `40px`);
         console.log(res.data);
     })
         .catch((err) => {
@@ -178,5 +203,21 @@ $(`#registerBtn`).on(`click`, () => {
         $(`#userBtn`).html(`<i class="fa-solid fa-user"></i>`);
         console.log(res.data);
     });
+});
+$(`#userBtn`).on(`click`, () => {
+    if ($(`#userBtn`).hasClass(`openUserInfo`)) {
+        $(`.userAccountContainer`).css(`display`, `flex`);
+        $(`.wrap`).css(`display`, `none`);
+    }
+});
+$(`#userBtn i`).on(`click`, () => {
+    if ($(`#userBtn`).hasClass(`openUserInfo`)) {
+        $(`.userAccountContainer`).css(`display`, `flex`);
+        $(`.wrap`).css(`display`, `none`);
+    }
+});
+$(`.closeUserAccountContainer`).on(`click`, () => {
+    $(`.userAccountContainer`).css(`display`, `none`);
+    $(`.wrap`).css(`display`, `flex`);
 });
 //# sourceMappingURL=index.js.map

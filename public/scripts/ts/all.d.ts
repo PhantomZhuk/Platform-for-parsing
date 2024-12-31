@@ -4,10 +4,10 @@ declare class p5 {
 }
 
 declare class axios {
-  static get: (url: string) => Promise<any>;
-  static post: (url: string, data: any) => Promise<any>;
-  static put: (url: string, data: any) => Promise<any>;
-  static delete: (url: string) => Promise<any>;
+  static get: (url: string, settings?: any) => Promise<any>;
+  static post: (url: string, data: any, settings?: any) => Promise<any>;
+  static put: (url: string, data: any, settings?: any) => Promise<any>;
+  static delete: (url: string, settings?: any) => Promise<any>;
 }
 
 interface sketchFns {

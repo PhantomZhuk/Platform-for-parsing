@@ -17,7 +17,7 @@ const router = express
     .Router()
     .get(`/getRandomProducts`, controllers.getRandomProducts)
     .get(`/protected`, ...controllers.protected)
-    .get(`/refreshToken`, controllers.refresh)
+    .post(`/refreshToken`, controllers.refreshToken)
     .get(`/getUserInfo`, controllers.getUserInfo)
     // .post(`/getProductsFromSearch`, controllers.getProductsFromSearch)
     .post(`/fetchProductFromServices`, controllers.fetchProductFromServices)
