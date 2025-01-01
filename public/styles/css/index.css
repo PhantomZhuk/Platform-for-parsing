@@ -5,6 +5,27 @@
   font-family: "Montserrat";
 }
 
+.notificationPopup {
+  min-width: 300px;
+  min-height: 100px;
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background-color: #1f1f1f;
+  box-shadow: 0 0 5px 2px #753efe;
+  border-radius: 10px;
+  padding: 10px 20px;
+  z-index: 1111;
+}
+.notificationPopup p {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
 .spinerContainer {
   width: 100%;
   height: 100vh;
@@ -366,7 +387,7 @@
 .userAccountContainer {
   width: 100%;
   min-height: 100vh;
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
   background-color: #0d0d0d;
@@ -562,7 +583,8 @@
 .userAccountContainer main .userInfoContainer .infoContainer .userPhone span:hover {
   color: #753efe;
 }
-.userAccountContainer main .userInfoContainer .infoContainer #editProfileBtn {
+.userAccountContainer main .userInfoContainer .infoContainer #editProfileBtn,
+.userAccountContainer main .userInfoContainer .infoContainer #logOutBtn {
   border: none;
   border-radius: 10px;
   background-color: #452497;
@@ -574,17 +596,107 @@
   color: #ffffff;
   font-weight: 600;
   box-shadow: 0 0 5px 1px #452497;
-  margin: 50px 0;
+  font-size: 1.1rem;
+  margin-top: 20px;
+}
+.userAccountContainer main .userInfoContainer .infoContainer #editProfileBtn:hover,
+.userAccountContainer main .userInfoContainer .infoContainer #logOutBtn:hover {
+  background-color: #753efe;
+}
+.userAccountContainer main .userInfoContainer .infoContainer #editProfileBtn i,
+.userAccountContainer main .userInfoContainer .infoContainer #logOutBtn i {
+  margin-left: 5px;
+}
+.userAccountContainer main .userInfoContainer .infoContainer #deleteUserBtn {
+  border: none;
+  border-radius: 10px;
+  background-color: #7e0000;
+  padding: 14px 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 0 5px 1px #7e0000;
+  margin-top: 20px;
   font-size: 1.1rem;
 }
-.userAccountContainer main .userInfoContainer .infoContainer #editProfileBtn:hover {
-  background-color: #753efe;
+.userAccountContainer main .userInfoContainer .infoContainer #deleteUserBtn:hover {
+  background-color: #f10000;
+  box-shadow: 0 0 5px 1px #f10000;
+}
+.userAccountContainer main .userInfoContainer .infoContainer #deleteUserBtn i {
+  margin-left: 5px;
+}
+.userAccountContainer main .userInfoContainer .updateUserInfo {
+  width: 100%;
+  min-height: 85vh;
+  display: none;
+  flex-direction: column;
+  padding: 100px 20px 0 20px;
+}
+.userAccountContainer main .userInfoContainer .updateUserInfo input {
+  border: none;
+  border-radius: 10px;
+  background-color: #452497;
+  width: 100%;
+  height: 50px;
+  margin-right: 10px;
+  outline: none;
+  padding-left: 10px;
+  font-size: 1rem;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 0 3px 0.5px #452497;
+  margin-top: 20px;
+}
+.userAccountContainer main .userInfoContainer .updateUserInfo input::placeholder {
+  color: #ffffff;
+  font-weight: 600;
+}
+.userAccountContainer main .userInfoContainer .updateUserInfo .btnContainer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.userAccountContainer main .userInfoContainer .updateUserInfo .btnContainer button {
+  padding: 14px 90px;
+  border: none;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-top: 20px;
+}
+.userAccountContainer main .userInfoContainer .updateUserInfo .btnContainer button i {
+  margin-left: 5px;
+}
+.userAccountContainer main .userInfoContainer .updateUserInfo .btnContainer #updateUserInfoBtn {
+  background-color: #005900;
+  box-shadow: 0 0 5px 1px #005900;
+}
+.userAccountContainer main .userInfoContainer .updateUserInfo .btnContainer #updateUserInfoBtn:hover {
+  background-color: #00a500;
+  box-shadow: 0 0 5px 1px #00a500;
+}
+.userAccountContainer main .userInfoContainer .updateUserInfo .btnContainer #cancelUpdateUserInfo {
+  background-color: #7e0000;
+  box-shadow: 0 0 5px 1px #7e0000;
+}
+.userAccountContainer main .userInfoContainer .updateUserInfo .btnContainer #cancelUpdateUserInfo:hover {
+  background-color: #f10000;
+  box-shadow: 0 0 5px 1px #f10000;
 }
 
 .wrap {
   width: 100%;
   min-height: 100vh;
-  display: none;
+  display: flex;
   flex-direction: column;
   align-items: center;
   background-color: #0d0d0d;

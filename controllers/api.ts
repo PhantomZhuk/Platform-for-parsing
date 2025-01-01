@@ -433,7 +433,7 @@ export default {
             res.cookie('refreshToken', refreshToken)
                 .cookie('token', token)
                 .status(200)
-                .json({ message: "Cookies set" });
+                .json({ message: "Cookies set", user });
         } catch (err) {
             console.log(err);
         }
@@ -472,8 +472,10 @@ export default {
         } catch (err) { console.log(err); }
     },
     logout: async (req, res) => {
-        res.cookie('token', '', { httpOnly: true, secure: true, sameSite: 'none', maxAge: 0 })
-            .cookie('refreshToken', '', { httpOnly: true, secure: true, sameSite: 'none', maxAge: 0 })
+        res.cookie('token', '')
+            .cookie('refreshToken', '')
+            .status(200)
+            .json({ message: "Cookies cleared" });
     },
     updateUserInfo: async (req, res) => {
         try {
@@ -487,8 +489,11 @@ export default {
                 updateData.photo = req.file.path;
             }
 
+            console.log(updateData);
+
             const userID = jwt.verify(token, SECRET_KEY) as { _id: string };
-            const user = await User.findOneAndUpdate({ _id: userID._id }, { updateData }, { new: true });
+            console.log(userID._id);
+            const user = await User.findByIdAndUpdate({ _id: userID._id }, updateData, { new: true });
             res.status(200).json({ user });
         } catch (err) { console.log(err) };
     },
@@ -499,7 +504,7 @@ export default {
                 return res.status(401).json({ message: "Access token required" });
             }
             const userID = jwt.verify(token, SECRET_KEY) as { _id: string };
-            await User.findOneAndDelete({ _id: userID._id });
+            await User.findByIdAndDelete({ _id: userID._id });
             res.status(200).json({ message: "User deleted successfully" });
         } catch (err) { console.log(err) };
     },
@@ -528,4 +533,4 @@ export default {
     //         console.log(err);
     //     }
     // },
-}
+}   

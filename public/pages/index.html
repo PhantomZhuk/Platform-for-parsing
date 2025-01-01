@@ -23,6 +23,10 @@
 
 <body>
 
+  <div class="notificationPopup">
+    <p class="notification"></p>
+  </div>
+
   <div class="spinerContainer">
     <div class="spiner">
       <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
@@ -98,7 +102,18 @@
           <div class="userName"></div>
           <div class="userEmail"></div>
           <div class="userPhone"></div>
-          <button id="editProfileBtn">Edit profile</button>
+          <button id="editProfileBtn">Edit profile <i class="fa-solid fa-user-pen"></i></button>
+          <button id="logOutBtn">Log out <i class="fa-solid fa-right-from-bracket"></i></button>
+          <button id="deleteUserBtn">Delete account <i class="fa-solid fa-user-xmark"></i></button>
+        </div>
+        <div class="updateUserInfo">
+          <input type="text" name="name" id="nameInputUndate" placeholder="Name">
+          <input type="email" name="email" id="emailInputUpdate" placeholder="Email">
+          <input type="tel" name="tel" id="telInputUpdate" placeholder="Phone">
+          <div class="btnContainer">
+            <button id="updateUserInfoBtn">Update <i class="fa-solid fa-user-check"></i></button>
+            <button id="cancelUpdateUserInfo">Cancel <i class="fa-solid fa-xmark"></i></button>
+          </div>
         </div>
       </div>
     </main>

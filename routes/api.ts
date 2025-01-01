@@ -25,9 +25,9 @@ const router = express
     .post(`/signIn`, controllers.signIn)
     .post(`/signUp`, controllers.signUp)
     .post(`/mailConfirmation`, controllers.mailConfirmation)
-    .post(`/logout`, controllers.logout)
+    .post(`/logOut`, controllers.logout)
     .post(`/addProductFreezer` , controllers.addProductFreezer)
-    .put(`/updateUserInfo`, upload.single('photo'), controllers.updateUserInfo)
+    .post(`/updateUserInfo`, upload.single('photo'), controllers.updateUserInfo)
     .delete(`/deleteUser`, controllers.deleteUser)
     // .post("/goodSubscription", controllers.goodSubscription)
     .post(`/getProductByUrl`, controllers.getProductsByUrl);

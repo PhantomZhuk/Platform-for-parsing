@@ -44,11 +44,11 @@ const UsersSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    photo: {
-        type: String,
-        required: true,
-        default: "../public/images/user.png",
-    },
+    // photo: {
+    //     type: String,
+    //     required: true,
+    //     default: "../public/images/user.png",
+    // },
     observedProducts: {
         type: [observedProducts],
         default: [],
