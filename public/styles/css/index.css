@@ -5,6 +5,105 @@
   font-family: "Montserrat";
 }
 
+.traceableProductsPopup {
+  width: 500px;
+  height: 90vh;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  background-color: #1f1f1f;
+  padding: 20px;
+  z-index: 111;
+}
+.traceableProductsPopup .traceableProductsContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: scroll;
+}
+.traceableProductsPopup .traceableProductsContainer::-webkit-scrollbar {
+  width: 10px;
+}
+.traceableProductsPopup .traceableProductsContainer .traceableProduct {
+  width: 350px;
+  height: 450px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #4c4b4e;
+  box-shadow: 0 0 5px 2px #6b6b6b;
+  border-radius: 10px;
+  margin: 10px 0;
+}
+.traceableProductsPopup .traceableProductsContainer .traceableProduct .photoContainer {
+  width: 100%;
+  height: 230px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.traceableProductsPopup .traceableProductsContainer .traceableProduct .photoContainer img {
+  max-width: 100%;
+  max-height: 100%;
+}
+.traceableProductsPopup .traceableProductsContainer .traceableProduct .productInfo {
+  width: 100%;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0 0 0;
+}
+.traceableProductsPopup .traceableProductsContainer .traceableProduct .productInfo .productName {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  overflow: hidden;
+  width: 100%;
+  height: 60px;
+  text-overflow: ellipsis;
+}
+.traceableProductsPopup .traceableProductsContainer .traceableProduct .productInfo .productStatus {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #00a500;
+}
+.traceableProductsPopup .traceableProductsContainer .traceableProduct .productInfo .productPrice {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+.traceableProductsPopup .traceableProductsContainer .traceableProduct .productInfo .btnContainer .deletetraceableProduct {
+  padding: 10px 52px;
+  border: none;
+  border-radius: 10px;
+  background-color: #7e0000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 0 5px 1px #7e0000;
+  font-size: 0.9rem;
+  text-decoration: none;
+  color: #ffffff;
+}
+.traceableProductsPopup .traceableProductsContainer .traceableProduct .productInfo .btnContainer .deletetraceableProduct:hover {
+  background-color: #f10000;
+  box-shadow: 0 0 3px 1px #f10000;
+}
+.traceableProductsPopup .traceableProductsContainer .traceableProduct .productInfo .btnContainer .deletetraceableProduct i {
+  margin-left: 5px;
+}
+
 .notificationPopup {
   min-width: 300px;
   min-height: 100px;
@@ -52,7 +151,7 @@
   animation: spin 2s linear infinite;
 }
 
-.addProductFreezerPopup {
+.addTraceableProductPopup {
   width: 30%;
   height: 100vh;
   position: fixed;
@@ -67,7 +166,7 @@
   padding: 20px;
   border-radius: 20px 0 0 20px;
 }
-.addProductFreezerPopup .header {
+.addTraceableProductPopup .header {
   width: 100%;
   height: 5vh;
   display: flex;
@@ -75,17 +174,17 @@
   color: #fff;
   font-size: 2rem;
 }
-.addProductFreezerPopup .header i {
+.addTraceableProductPopup .header i {
   cursor: pointer;
 }
-.addProductFreezerPopup .TrackProduct {
+.addTraceableProductPopup .TrackProduct {
   width: 100%;
   height: 90vh;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.addProductFreezerPopup .TrackProduct .product {
+.addTraceableProductPopup .TrackProduct .product {
   width: 350px;
   height: 500px;
   display: flex;
@@ -98,7 +197,7 @@
   color: #ffffff;
   margin: 10px;
 }
-.addProductFreezerPopup .TrackProduct .product .imgBlock {
+.addTraceableProductPopup .TrackProduct .product .imgBlock {
   width: 330px;
   height: 300px;
   display: flex;
@@ -107,12 +206,12 @@
   padding: 0 10px;
   background-color: #ffffff;
 }
-.addProductFreezerPopup .TrackProduct .product .imgBlock img {
+.addTraceableProductPopup .TrackProduct .product .imgBlock img {
   max-width: 330px;
   max-height: 300px;
   border-radius: 10px;
 }
-.addProductFreezerPopup .TrackProduct .product .infoBlock {
+.addTraceableProductPopup .TrackProduct .product .infoBlock {
   width: 100%;
   height: 200px;
   display: flex;
@@ -121,7 +220,7 @@
   align-items: center;
   padding-top: 10px;
 }
-.addProductFreezerPopup .TrackProduct .product .infoBlock .name {
+.addTraceableProductPopup .TrackProduct .product .infoBlock .name {
   font-size: 1rem;
   font-weight: 600;
   overflow: hidden;
@@ -129,17 +228,22 @@
   height: 60px;
   text-overflow: ellipsis;
 }
-.addProductFreezerPopup .TrackProduct .product .infoBlock .price {
-  font-size: 0.9rem;
+.addTraceableProductPopup .TrackProduct .product .infoBlock .status {
+  font-size: 1rem;
   font-weight: 600;
+  color: #00a500;
 }
-.addProductFreezerPopup .TrackProduct .product .infoBlock .btnContainer {
+.addTraceableProductPopup .TrackProduct .product .infoBlock .price {
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+.addTraceableProductPopup .TrackProduct .product .infoBlock .btnContainer {
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.addProductFreezerPopup .TrackProduct .product .infoBlock .btnContainer .track {
+.addTraceableProductPopup .TrackProduct .product .infoBlock .btnContainer .track {
   padding: 10px 52px;
   border: none;
   border-radius: 10px;
@@ -480,7 +584,7 @@
   background-color: #753efe;
   box-shadow: 0 0 3px 1px #753efe;
 }
-.userAccountContainer header #trackableGoodsBtnFake,
+.userAccountContainer header #trackableProductsBtnUser,
 .userAccountContainer header .languageBtn {
   border: none;
   border-radius: 10px;
@@ -495,7 +599,7 @@
   font-weight: 600;
   box-shadow: 0 0 5px 1px #452497;
 }
-.userAccountContainer header #trackableGoodsBtnFake:hover,
+.userAccountContainer header #trackableProductsBtnUser:hover,
 .userAccountContainer header .languageBtn:hover {
   background-color: #753efe;
   box-shadow: 0 0 3px 1px #753efe;
@@ -711,9 +815,10 @@
   background-color: #1f1f1f;
   color: #ffffff;
   border-bottom-right-radius: 20px;
-  box-shadow: 0 0 5px 2px #1f1f1f;
   box-shadow: 0 0 3px 1px #6b6b6b;
   z-index: 2;
+  position: sticky;
+  top: 0;
 }
 .wrap header h1 {
   font-size: 1.7rem;
@@ -786,7 +891,7 @@
   background-color: #753efe;
   box-shadow: 0 0 3px 1px #753efe;
 }
-.wrap header #trackableGoodsBtn,
+.wrap header #trackableProductsBtn,
 .wrap header .languageBtn {
   border: none;
   border-radius: 10px;
@@ -801,7 +906,7 @@
   font-weight: 600;
   box-shadow: 0 0 5px 1px #452497;
 }
-.wrap header #trackableGoodsBtn:hover,
+.wrap header #trackableProductsBtn:hover,
 .wrap header .languageBtn:hover {
   background-color: #753efe;
   box-shadow: 0 0 3px 1px #753efe;
@@ -830,7 +935,7 @@
 }
 .wrap main {
   width: 100%;
-  min-height: 90vh;
+  min-height: 100vh;
   display: flex;
   justify-content: space-between;
 }
@@ -923,6 +1028,16 @@
   width: 100%;
   height: 60px;
   text-overflow: ellipsis;
+}
+.wrap main .outerProductContainer .productContainer .product .infoBlock .price {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #ffffff;
+}
+.wrap main .outerProductContainer .productContainer .product .infoBlock .status {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #00a500;
 }
 .wrap main .outerProductContainer .productContainer .product .infoBlock .btnContainer {
   width: 100%;

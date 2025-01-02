@@ -15,6 +15,119 @@ $active-aside-section: #753efe;
 $btn-color: #452497;
 $shadow-color: #6b6b6b;
 
+.traceableProductsPopup {
+    width: 500px;
+    height: 90vh;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    background-color: $elements-bg;
+    padding: 20px;
+    z-index: 111;
+
+    .traceableProductsContainer {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: scroll;
+
+        &::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        .traceableProduct {
+            width: 350px;
+            height: 450px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #4c4b4e;
+            box-shadow: 0 0 5px 2px $shadow-color;
+            border-radius: 10px;
+            margin: 10px 0;
+
+            .photoContainer {
+                width: 100%;
+                height: 230px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                img {
+                    max-width: 100%;
+                    max-height: 100%;
+                }
+            }
+
+            .productInfo {
+                width: 100%;
+                height: 180px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+                padding: 20px 0 0 0;
+
+                .productName {
+                    font-size: 1rem;
+                    font-weight: 600;
+                    color: $active-color;
+                    overflow: hidden;
+                    width: 100%;
+                    height: 60px;
+                    text-overflow: ellipsis;
+                }
+
+                .productStatus {
+                    font-size: 1rem;
+                    font-weight: 600;
+                    color: #00a500;
+                }
+
+                .productPrice {
+                    font-size: 1rem;
+                    font-weight: 600;
+                    color: $active-color;
+                }
+
+                .btnContainer {
+                    .deletetraceableProduct {
+                        padding: 10px 52px;
+                        border: none;
+                        border-radius: 10px;
+                        background-color: #7e0000;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        cursor: pointer;
+                        font-weight: 600;
+                        box-shadow: 0 0 5px 1px #7e0000;
+                        font-size: 0.9rem;
+                        text-decoration: none;
+                        color: $active-color;
+
+                        &:hover {
+                            background-color: #f10000;
+                            box-shadow: 0 0 3px 1px #f10000;
+                        }
+
+                        i {
+                            margin-left: 5px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 .notificationPopup {
     min-width: 300px;
     min-height: 100px;
@@ -66,7 +179,7 @@ $shadow-color: #6b6b6b;
     }
 }
 
-.addProductFreezerPopup {
+.addTraceableProductPopup {
     width: 30%;
     height: 100vh;
     position: fixed;
@@ -148,9 +261,15 @@ $shadow-color: #6b6b6b;
                     text-overflow: ellipsis;
                 }
 
-                .price {
-                    font-size: 0.9rem;
+                .status {
+                    font-size: 1rem;
                     font-weight: 600;
+                    color: #00a500;
+                }
+
+                .price {
+                    font-size: 1.2rem;
+                    font-weight: 900;
                 }
 
                 .btnContainer {
@@ -542,7 +661,7 @@ $shadow-color: #6b6b6b;
             }
         }
 
-        #trackableGoodsBtnFake,
+        #trackableProductsBtnUser,
         .languageBtn {
             border: none;
             border-radius: 10px;
@@ -798,9 +917,10 @@ $shadow-color: #6b6b6b;
         background-color: $elements-bg;
         color: $active-color;
         border-bottom-right-radius: 20px;
-        box-shadow: 0 0 5px 2px $elements-bg;
         box-shadow: 0 0 3px 1px $shadow-color;
         z-index: 2;
+        position: sticky;
+        top: 0;
 
         h1 {
             font-size: 1.7rem;
@@ -884,7 +1004,7 @@ $shadow-color: #6b6b6b;
             }
         }
 
-        #trackableGoodsBtn,
+        #trackableProductsBtn,
         .languageBtn {
             border: none;
             border-radius: 10px;
@@ -933,7 +1053,7 @@ $shadow-color: #6b6b6b;
 
     main {
         width: 100%;
-        min-height: 90vh;
+        min-height: 100vh;
         display: flex;
         justify-content: space-between;
 
@@ -1032,6 +1152,19 @@ $shadow-color: #6b6b6b;
                             width: 100%;
                             height: 60px;
                             text-overflow: ellipsis;
+                        }
+
+                        .price {
+                            font-size: 1.2rem;
+                            font-weight: 900;
+                            // color: $active-aside-section;
+                            color: $active-color;
+                        }
+
+                        .status {
+                            font-size: 1rem;
+                            font-weight: 600;
+                            color: #00a500;
                         }
 
                         .btnContainer {

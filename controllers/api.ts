@@ -8,77 +8,79 @@ import nodemailer from 'nodemailer'
 import TelegramBot from "node-telegram-bot-api";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import schedule from "node-schedule";
+
 dotenv.config();
 
 cookieParser();
 // import randomUseragent from "random-useragent";
 // import StealthPlugin from "puppeteer-extra-plugin-stealth";
 // import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
-// const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN!, {
-//     polling: true,
-// })
+const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN!, {
+    polling: true,
+})
 
-// bot.onText(/\/start/, async (msg) => {
+bot.onText(/\/start/, async (msg) => {
 
-//     const chatId = msg.chat.id;
+    const chatId = msg.chat.id;
 
-//     // Кнопка для запиту номера телефону
-//     const keyboard = {
-//         reply_markup: {
-//             keyboard: [
-//                 [
-//                     {
-//                         text: "Надіслати номер телефону",
-//                         request_contact: true, // Запитує контакт
-//                     },
-//                 ],
-//             ],
-//             resize_keyboard: true, // Змінює розмір кнопок під екран користувача
-//             one_time_keyboard: true, // Закриває клавіатуру після вибору
-//         },
-//     };
+    // Кнопка для запиту номера телефону
+    const keyboard = {
+        reply_markup: {
+            keyboard: [
+                [
+                    {
+                        text: "Надіслати номер телефону",
+                        request_contact: true, // Запитує контакт
+                    },
+                ],
+            ],
+            resize_keyboard: true, // Змінює розмір кнопок під екран користувача
+            one_time_keyboard: true, // Закриває клавіатуру після вибору
+        },
+    };
 
-//     bot.sendMessage(
-//         chatId,
-//         "Будь ласка, надішліть ваш номер телефону:",
-//         keyboard
-//     );
-// });
+    bot.sendMessage(
+        chatId,
+        "Будь ласка, надішліть ваш номер телефону:",
+        keyboard
+    );
+});
 
-// // Обробляємо отримання контактів
-// bot.on("contact", async (msg) => {
-//     const contact = msg.contact;
-//     const chatId = msg.chat.id;
+// Обробляємо отримання контактів
+bot.on("contact", async (msg) => {
+    const contact = msg.contact;
+    const chatId = msg.chat.id;
 
-//     if (contact) {
-//         const phoneNumber = contact.phone_number;
-//         const user = await User.findOne({ phone: phoneNumber }).lean();
+    if (contact) {
+        const phoneNumber = contact.phone_number;
+        const user = await User.findOne({ phone: phoneNumber }).lean();
 
-//         if (user) {
-//             bot.sendMessage(
-//                 chatId,
-//                 `Дякуємо! Ваш номер телефону: ${phoneNumber} і такого користувача знайдено в базі даних`
-//             );
-//         } else {
-//             bot.sendMessage(
-//                 chatId,
-//                 `Дякуємо! Ваш номер телефону: ${phoneNumber} і такого користувача не знайдено в базі даних`
-//             );
-//         }
+        if (user) {
+            bot.sendMessage(
+                chatId,
+                `Дякуємо! Ваш номер телефону: ${phoneNumber} і такого користувача знайдено в базі даних`
+            );
+        } else {
+            bot.sendMessage(
+                chatId,
+                `Дякуємо! Ваш номер телефону: ${phoneNumber} і такого користувача не знайдено в базі даних`
+            );
+        }
 
-//         // Можете зберегти номер у базі даних тут
-//     }
-// });
+        // Можете зберегти номер у базі даних тут
+    }
+});
 
 // // Додатковий обробник
-// bot.on("message", (msg) => {
-//     if (!msg.contact) {
-//         bot.sendMessage(
-//             msg.chat.id,
-//             "Натисніть на кнопку, щоб поділитися номером телефону."
-//         );
-//     }
-// });
+bot.on("message", (msg) => {
+    if (!msg.contact) {
+        bot.sendMessage(
+            msg.chat.id,
+            "Натисніть на кнопку, щоб поділитися номером телефону."
+        );
+    }
+});
 
 
 
@@ -99,6 +101,7 @@ interface IRandimProduct {
     price: string;
     photo: string;
     pageLink: string;
+    status: string;
 }
 
 interface IProducts {
@@ -106,6 +109,7 @@ interface IProducts {
     price: string;
     photo: string;
     pageLink: string;
+    status: string;
 }
 
 interface ImailOptions {
@@ -150,6 +154,44 @@ const transporter = nodemailer.createTransport({
 })
 
 let randomCode: string;
+
+const job = schedule.scheduleJob('52 17 * * *', async function () {
+    try {
+        const users = await User.find();
+        users.forEach(async (user) => {
+            user.observedProducts.forEach(async (product) => {
+                try {
+                    const url = product.pageLink;
+                    const browser = await puppeteer.launch({
+                        headless: false,
+                        args: [
+                            '--no-sandbox',
+                            '--disable-setuid-sandbox',
+                            '--window-size=10x10',
+                            '--disable-gpu',
+                            '--window-position=-10000,-10000',
+                        ]
+                    });
+                    const page = await browser.newPage();
+                    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+                    await new Promise((resolve) => setTimeout(resolve, 4000));
+                    await page.waitForSelector('#scrollArea', { visible: true, timeout: 60000 });
+                    const html = await page.content();
+                    const $ = cheerio.load(html);
+                    const price: string = $(`.product-price__big`).text().trim();
+                    const status: string = $(`.status-label`).text().trim();
+
+                    if (price !== product.price || status !== product.status) {
+                        product.price = price;
+                        product.status = status;
+                    }
+
+                    await browser.close();
+                } catch (err) { console.log(err) };
+            })
+        })
+    } catch (err) { console.log(err) };
+});
 
 export default {
     // getProductsFromSearch: async (req, res) => {
@@ -217,7 +259,7 @@ export default {
                 ]
             });
             const page = await browser.newPage();
-            await page.goto(`https://rozetka.com.ua/ua/promo/newyear/?gad_source=1&gclid=EAIaIQobChMI-P2gyemsigMVRLODBx287TcIEAAYASAAEgKYWPD_BwE`, { waitUntil: 'domcontentloaded', timeout: 60000 });
+            await page.goto(`https://rozetka.com.ua/promo/rztk/`, { waitUntil: 'domcontentloaded', timeout: 60000 });
             await new Promise((resolve) => setTimeout(resolve, 4000));
             await page.waitForSelector(`.catalog-grid`, { visible: true, timeout: 60000 });
             const html = await page.content();
@@ -228,11 +270,13 @@ export default {
                 const price: string = $(element).find(`.goods-tile__price-value`).text().trim();
                 const photo: string = $(element).find(`.goods-tile__picture img`).attr('src')!;
                 const pageLink: string = $(element).find(`.product-link a`).attr('href')!;
+                const status: string = $(element).find(`.goods-tile__availability`).text().trim();
                 data.push({
                     productName,
                     price,
                     photo,
                     pageLink,
+                    status
                 });
             });
 
@@ -283,16 +327,18 @@ export default {
                 const price: string = $(element).find(service.html.price).text().trim();
                 const photo: string = $(element).find(service.html.image).attr('src')!;
                 const pageLink: string = $(element).find(service.html.pageLink).attr('href')!;
+                const status: string = $(element).find(service.html.availability.className).text().trim();
                 data.push({
                     productName,
                     price,
                     photo,
                     pageLink,
+                    status
                 });
             });
 
             let filterData: IProducts[] = data.filter(item =>
-                item.productName && item.price && item.pageLink && item.photo
+                item.productName && item.price && item.pageLink && item.photo && item.status
             );
 
             res.json(filterData);
@@ -508,7 +554,7 @@ export default {
             res.status(200).json({ message: "User deleted successfully" });
         } catch (err) { console.log(err) };
     },
-    addProductFreezer: async (req, res) => {
+    addTraceableProduct: async (req, res) => {
         try {
             const token: string = req.cookies.token;
             if (!token) {
@@ -520,6 +566,18 @@ export default {
             res.status(200).json({ user });
         } catch (err) { console.log(err) }
     },
+    deleteTraceableProduct: async (req, res) => {
+        try {
+            const token: string = req.cookies.token;
+            if (!token) {
+                return res.status(401).json({ message: "Access token required" });
+            }
+            const userID = jwt.verify(token, SECRET_KEY) as { _id: string };
+            const { productID } = req.body;
+            const user = await User.findOneAndUpdate({ _id: userID._id }, { $pull: { observedProducts: { _id: productID } } }, { new: true });
+            res.status(200).json({ user });
+        } catch (err) { console.log(err) }
+    },
     // goodSubscription: async (req, res) => {
     //     try {
     //         console.log("here");
@@ -527,10 +585,49 @@ export default {
     //         res.json({ message: "Good subscription created" });
     //         // await bot.sendMessage(
     //         //   1998558386,
-    //         //   Створено нову відписку з товаром ${goodId}
+    //         //   Створено нову підписку з товаром ${goodId}
     //         // );
     //     } catch (err) {
     //         console.log(err);
     //     }
     // },
+    getProductInfoByUrl: async (req, res) => {
+        try {
+            const { url } = req.body;
+            const browser = await puppeteer.launch({
+                headless: false,
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--window-size=10x10',
+                    '--disable-gpu',
+                    '--window-position=-10000,-10000',
+                ]
+            });
+            const page = await browser.newPage();
+            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+            await new Promise((resolve) => setTimeout(resolve, 4000));
+            await page.waitForSelector(`.main-slider__item img`, { visible: true, timeout: 60000 });
+            const html = await page.content();
+            const $ = cheerio.load(html);
+            let data: object;
+            const productName: string = $(`.title__font`).text().trim();
+            const price: string = $(`.product-price__big`).text().trim();
+            const photo: string = $(`.main-slider__item img`).attr('src')!;
+            const pageLink: string = $(url).attr('href')!;
+            const status: string = $(`.status-label`).text().trim();
+            data = {
+                productName,
+                price,
+                photo,
+                pageLink,
+                status
+            };
+
+            res.json( data);
+            await browser.close();
+        } catch (err) {
+            console.log(err);
+        }
+    }
 }   

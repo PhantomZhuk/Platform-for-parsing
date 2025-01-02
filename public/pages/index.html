@@ -23,6 +23,12 @@
 
 <body>
 
+  <div class="traceableProductsPopup">
+    <div class="traceableProductsContainer">
+
+    </div>
+  </div>
+
   <div class="notificationPopup">
     <p class="notification"></p>
   </div>
@@ -36,9 +42,9 @@
     </div>
   </div>
 
-  <div class="addProductFreezerPopup">
+  <div class="addTraceableProductPopup">
     <div class="header">
-      <i class="fa-solid fa-xmark closeAddProductFreezerPopup"></i>
+      <i class="fa-solid fa-xmark closeAddTraceableProductPopup"></i>
     </div>
     <div class="TrackProduct">
 
@@ -90,7 +96,7 @@
         <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
       </div>
       <button class="languageBtn">UA <i class="fa-solid fa-angle-down"></i></button>
-      <button id="trackableGoodsBtnFake"><i class="fa-solid fa-rectangle-list"></i></button>
+      <button id="trackableProductsBtnUser"><i class="fa-solid fa-rectangle-list"></i></button>
       <i class="fa-solid fa-xmark closeUserAccountContainer"></i>
     </header>
     <main class="userInfoContainer">
@@ -127,11 +133,11 @@
         <p class="language-btncatalog">Каталог</p>
       </button>
       <div class="searchContainer">
-        <input type="text" class="searchInput" placeholder="Пошук">
+        <input type="text" class="searchInput" placeholder="Вставте силку на товар щоб відстужувати його">
         <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
       </div>
       <button class="languageBtn">UA <i class="fa-solid fa-angle-down"></i></button>
-      <button id="trackableGoodsBtn"><i class="fa-solid fa-rectangle-list"></i></button>
+      <button id="trackableProductsBtn"><i class="fa-solid fa-rectangle-list"></i></button>
       <button id="userBtn" class="logIn">Log in</button>
     </header>
     <main>
@@ -151,7 +157,9 @@
       </div>
     </main>
   </div>
-  <script defer type="module" src="/scripts/js/index.js"></script>
+  <script defer type="module" src="/scripts/js/home/index.js"></script>
+  <script defer type="module" src="/scripts/js/home/auth.js"></script>
+  <script defer type="module" src="/scripts/js/home/user.js"></script>
 </body>
 
 </html>

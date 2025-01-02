@@ -17,14 +17,11 @@ const observedProducts = new mongoose.Schema({
         type: String,
         required: true,
     },
-    exists: {
-        type: Boolean,
-        default: false,
-    },
-    textReadySend: {
+    status: {
         type: String,
-        default: "",
-    },
+        default: "Готовий до відправлення",
+        required: true,
+    }
 });
 
 const UsersSchema = new mongoose.Schema({

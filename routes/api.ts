@@ -26,10 +26,12 @@ const router = express
     .post(`/signUp`, controllers.signUp)
     .post(`/mailConfirmation`, controllers.mailConfirmation)
     .post(`/logOut`, controllers.logout)
-    .post(`/addProductFreezer` , controllers.addProductFreezer)
+    .post(`/addTraceableProduct` , controllers.addTraceableProduct)
     .post(`/updateUserInfo`, upload.single('photo'), controllers.updateUserInfo)
     .delete(`/deleteUser`, controllers.deleteUser)
     // .post("/goodSubscription", controllers.goodSubscription)
-    .post(`/getProductByUrl`, controllers.getProductsByUrl);
+    .post(`/getProductByUrl`, controllers.getProductsByUrl)
+    .post(`/deleteTraceableProduct`, controllers.deleteTraceableProduct)
+    .post(`/getProductInfoByUrl`, controllers.getProductInfoByUrl);
 
 export default router;
