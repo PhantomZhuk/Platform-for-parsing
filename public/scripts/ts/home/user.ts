@@ -13,7 +13,7 @@ function registrationCheck(): void {
             $(`#emailInputUpdate`).val(res.data.user.email);
             $(`#telInputUpdate`).val(res.data.user.phone);
             $(`.traceableProductsContainer`).empty();
-            res.data.user.observedProducts.forEach((el: any) => {
+            res.data.user.observedProducts.forEach((el: IProduct) => {
                 $(`.traceableProductsContainer`).append(`
                     <div class="traceableProduct" id="${el._id}">
             <div class="photoContainer">
@@ -82,6 +82,15 @@ $(`#updateUserInfoBtn`).on(`click`, () => {
 $(`.closeUserAccountContainer`).on(`click`, () => {
     $(`.userAccountContainer`).css(`display`, `none`);
     $(`.wrap`).css(`display`, `flex`);
+    $(`.traceableProductsPopup`).css(`display`, `none`);
+    $(`#trackableProductsBtn`).css(`background-color`, `#452497`);
+    $(`#trackableProductsBtn`).css(`box-shadow`, `0 0 5px 1px #452497`);
+    $(`.wrap header`).css(`border-bottom-right-radius`, `20px`);
+    $(`.traceableProductsPopup`).css(`display`, `none`);
+    $(`#trackableProductsBtnUser`).css(`background-color`, `#452497`);
+    $(`#trackableProductsBtnUser`).css(`box-shadow`, `0 0 5px 1px #452497`);
+    $(`.userAccountContainer header`).css(`border-bottom-right-radius`, `20px`);
+    traceableProductsPopup = false;
 })
 
 $(`#editProfileBtn`).on(`click`, () => {

@@ -128,11 +128,12 @@
 .spinerContainer {
   width: 100%;
   height: 100vh;
-  display: none;
+  display: flex;
   justify-content: center;
   align-items: center;
   background-color: #0d0d0d;
   position: fixed;
+  z-index: 1111;
 }
 .spinerContainer .spiner {
   width: 400px;
@@ -243,7 +244,8 @@
   justify-content: center;
   align-items: center;
 }
-.addTraceableProductPopup .TrackProduct .product .infoBlock .btnContainer .track {
+.addTraceableProductPopup .TrackProduct .product .infoBlock .btnContainer .track,
+.addTraceableProductPopup .TrackProduct .product .infoBlock .btnContainer .trackSearchProduct {
   padding: 10px 52px;
   border: none;
   border-radius: 10px;

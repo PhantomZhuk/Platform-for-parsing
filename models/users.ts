@@ -20,7 +20,6 @@ const observedProducts = new mongoose.Schema({
     status: {
         type: String,
         default: "Готовий до відправлення",
-        required: true,
     }
 });
 
@@ -40,6 +39,11 @@ const UsersSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
+    },
+    chatId: {
+        type: Number,
+        required: true,
+        default: 0,
     },
     // photo: {
     //     type: String,

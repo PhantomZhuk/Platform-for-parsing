@@ -29,10 +29,10 @@ $(`#sendCodeOnEmail`).on(`click`, () => {
     const regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     const regexTel = /^\+?[1-9]\d{1,14}$/;
     const regexPassword = /^[a-zA-Z0-9]{8,20}$/;
-    const login: any = $(`#loginRegisterInput`).val();
-    const email: any = $(`#emailRegisterInput`).val();
-    const tel: any = $(`#telRegisterInput`).val();
-    const password: any = $(`#passwordRegisterInput`).val();
+    const login: string = $(`#loginRegisterInput`).val() as string;
+    const email: string = $(`#emailRegisterInput`).val() as string;
+    const tel: string = $(`#telRegisterInput`).val() as string;
+    const password: string = $(`#passwordRegisterInput`).val() as string;
     if (regexLogin.test(login)) {
         if (regexEmail.test(email)) {
             if (regexTel.test(tel)) {

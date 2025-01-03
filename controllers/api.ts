@@ -24,19 +24,18 @@ bot.onText(/\/start/, async (msg) => {
 
     const chatId = msg.chat.id;
 
-    // Кнопка для запиту номера телефону
     const keyboard = {
         reply_markup: {
             keyboard: [
                 [
                     {
                         text: "Надіслати номер телефону",
-                        request_contact: true, // Запитує контакт
+                        request_contact: true,
                     },
                 ],
             ],
-            resize_keyboard: true, // Змінює розмір кнопок під екран користувача
-            one_time_keyboard: true, // Закриває клавіатуру після вибору
+            resize_keyboard: true,
+            one_time_keyboard: true,
         },
     };
 
@@ -47,42 +46,31 @@ bot.onText(/\/start/, async (msg) => {
     );
 });
 
-// Обробляємо отримання контактів
+let phoneNumber: string;
+
 bot.on("contact", async (msg) => {
     const contact = msg.contact;
     const chatId = msg.chat.id;
 
     if (contact) {
-        const phoneNumber = contact.phone_number;
-        const user = await User.findOne({ phone: phoneNumber }).lean();
+        phoneNumber = contact.phone_number;
+        const user = await User.findOne({ phone: phoneNumber });
 
         if (user) {
             bot.sendMessage(
                 chatId,
                 `Дякуємо! Ваш номер телефону: ${phoneNumber} і такого користувача знайдено в базі даних`
             );
+            user.chatId = chatId;
+            await user.save();
         } else {
             bot.sendMessage(
                 chatId,
-                `Дякуємо! Ваш номер телефону: ${phoneNumber} і такого користувача не знайдено в базі даних`
+                `Дякуємо! Ваш номер телефону: ${phoneNumber} і такого користувача не знайдено в базі даних.\n\nЗареєструйтесь на сайті щоб бот працював.`
             );
         }
-
-        // Можете зберегти номер у базі даних тут
     }
 });
-
-// // Додатковий обробник
-bot.on("message", (msg) => {
-    if (!msg.contact) {
-        bot.sendMessage(
-            msg.chat.id,
-            "Натисніть на кнопку, щоб поділитися номером телефону."
-        );
-    }
-});
-
-
 
 const SECRET_KEY: string = process.env.SECRET_KEY!;
 const REFRESH_TOKEN_SECRET: string = process.env.REFRESH_TOKEN_SECRET!;
@@ -155,7 +143,7 @@ const transporter = nodemailer.createTransport({
 
 let randomCode: string;
 
-const job = schedule.scheduleJob('52 17 * * *', async function () {
+async function start() {
     try {
         const users = await User.find();
         users.forEach(async (user) => {
@@ -175,15 +163,79 @@ const job = schedule.scheduleJob('52 17 * * *', async function () {
                     const page = await browser.newPage();
                     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
                     await new Promise((resolve) => setTimeout(resolve, 4000));
-                    await page.waitForSelector('#scrollArea', { visible: true, timeout: 60000 });
+                    await page.waitForSelector('.product-trade', { visible: true, timeout: 60000 });
                     const html = await page.content();
                     const $ = cheerio.load(html);
                     const price: string = $(`.product-price__big`).text().trim();
                     const status: string = $(`.status-label`).text().trim();
 
-                    if (price !== product.price || status !== product.status) {
-                        product.price = price;
-                        product.status = status;
+                    console.log(price, product.price);
+                    console.log(Number(price.replace(/[\s₴]/g, "")), Number(product.price.replace(/[\s₴]/g, "")))
+
+                    if (user.chatId !== 0 && user.chatId !== undefined) {
+                        if (Number(price.replace(/[\s₴]/g, "")) !== Number(product.price.replace(/[\s₴]/g, ""))) {
+                            await bot.sendMessage(user.chatId, `Ціна товару ${product.productName} змінилась з ${product.price} грн на ${price} грн.`);
+                            product.price = price;
+                            await user.save();
+                        }
+
+                        if (status !== product.status) {
+                            await bot.sendMessage(user.chatId, `Статус товару ${product.productName} змінился з ${product.status} на ${status}.`);
+                            product.status = status;
+                            await user.save();
+                        }
+                    }
+
+                    await browser.close();
+                } catch (err) { console.log(err) };
+            })
+        })
+    } catch (err) { console.log(err) };
+}
+
+// start()
+
+const job = schedule.scheduleJob('0 23 * * *', async function () {
+    try {
+        const users = await User.find();
+        users.forEach(async (user) => {
+            user.observedProducts.forEach(async (product) => {
+                try {
+                    const url = product.pageLink;
+                    const browser = await puppeteer.launch({
+                        headless: false,
+                        args: [
+                            '--no-sandbox',
+                            '--disable-setuid-sandbox',
+                            '--window-size=10x10',
+                            '--disable-gpu',
+                            '--window-position=-10000,-10000',
+                        ]
+                    });
+                    const page = await browser.newPage();
+                    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+                    await new Promise((resolve) => setTimeout(resolve, 4000));
+                    await page.waitForSelector('.product-trade', { visible: true, timeout: 60000 });
+                    const html = await page.content();
+                    const $ = cheerio.load(html);
+                    const price: string = $(`.product-price__big`).text().trim();
+                    const status: string = $(`.status-label`).text().trim();
+
+                    console.log(price, product.price);
+                    console.log(Number(price.replace(/[\s₴]/g, "")), Number(product.price.replace(/[\s₴]/g, "")))
+
+                    if (user.chatId !== 0 && user.chatId !== undefined) {
+                        if (Number(price.replace(/[\s₴]/g, "")) !== Number(product.price.replace(/[\s₴]/g, ""))) {
+                            await bot.sendMessage(user.chatId, `Ціна товару ${product.productName} змінилась з ${product.price} грн на ${price} грн.`);
+                            product.price = price;
+                            await user.save();
+                        }
+
+                        if (status !== product.status) {
+                            await bot.sendMessage(user.chatId, `Статус товару ${product.productName} змінился з ${product.status} на ${status}.`);
+                            product.status = status;
+                            await user.save();
+                        }
                     }
 
                     await browser.close();
@@ -578,43 +630,29 @@ export default {
             res.status(200).json({ user });
         } catch (err) { console.log(err) }
     },
-    // goodSubscription: async (req, res) => {
-    //     try {
-    //         console.log("here");
-    //         // const goodId = req.body.goodId;
-    //         res.json({ message: "Good subscription created" });
-    //         // await bot.sendMessage(
-    //         //   1998558386,
-    //         //   Створено нову підписку з товаром ${goodId}
-    //         // );
-    //     } catch (err) {
-    //         console.log(err);
-    //     }
-    // },
     getProductInfoByUrl: async (req, res) => {
         try {
             const { url } = req.body;
             const browser = await puppeteer.launch({
                 headless: false,
-                args: [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--window-size=10x10',
-                    '--disable-gpu',
-                    '--window-position=-10000,-10000',
-                ]
+                // args: [
+                //     '--no-sandbox',
+                //     '--disable-setuid-sandbox',
+                //     '--window-size=10x10',
+                //     '--disable-gpu',
+                //     '--window-position=-10000,-10000',
+                // ]
             });
             const page = await browser.newPage();
             await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
             await new Promise((resolve) => setTimeout(resolve, 4000));
-            await page.waitForSelector(`.main-slider__item img`, { visible: true, timeout: 60000 });
             const html = await page.content();
             const $ = cheerio.load(html);
             let data: object;
             const productName: string = $(`.title__font`).text().trim();
             const price: string = $(`.product-price__big`).text().trim();
             const photo: string = $(`.main-slider__item img`).attr('src')!;
-            const pageLink: string = $(url).attr('href')!;
+            const pageLink: string = url;
             const status: string = $(`.status-label`).text().trim();
             data = {
                 productName,
@@ -624,7 +662,7 @@ export default {
                 status
             };
 
-            res.json( data);
+            res.json(data);
             await browser.close();
         } catch (err) {
             console.log(err);

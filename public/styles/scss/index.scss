@@ -153,11 +153,12 @@ $shadow-color: #6b6b6b;
 .spinerContainer {
     width: 100%;
     height: 100vh;
-    display: none;
+    display: flex;
     justify-content: center;
     align-items: center;
     background-color: $global-bg;
     position: fixed;
+    z-index: 1111;
 
     .spiner {
         width: 400px;
@@ -278,7 +279,8 @@ $shadow-color: #6b6b6b;
                     justify-content: center;
                     align-items: center;
 
-                    .track {
+                    .track,
+                    .trackSearchProduct {
                         padding: 10px 52px;
                         border: none;
                         border-radius: 10px;
