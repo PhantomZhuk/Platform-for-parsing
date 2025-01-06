@@ -45,11 +45,6 @@ const UsersSchema = new mongoose.Schema({
         required: true,
         default: 0,
     },
-    // photo: {
-    //     type: String,
-    //     required: true,
-    //     default: "../public/images/user.png",
-    // },
     observedProducts: {
         type: [observedProducts],
         default: [],

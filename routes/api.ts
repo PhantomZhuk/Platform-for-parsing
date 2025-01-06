@@ -29,7 +29,6 @@ const router = express
     .post(`/addTraceableProduct` , controllers.addTraceableProduct)
     .post(`/updateUserInfo`, upload.single('photo'), controllers.updateUserInfo)
     .delete(`/deleteUser`, controllers.deleteUser)
-    // .post("/goodSubscription", controllers.goodSubscription)
     .post(`/getProductByUrl`, controllers.getProductsByUrl)
     .post(`/deleteTraceableProduct`, controllers.deleteTraceableProduct)
     .post(`/getProductInfoByUrl`, controllers.getProductInfoByUrl);

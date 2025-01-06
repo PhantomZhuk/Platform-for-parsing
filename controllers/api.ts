@@ -635,13 +635,13 @@ export default {
             const { url } = req.body;
             const browser = await puppeteer.launch({
                 headless: false,
-                // args: [
-                //     '--no-sandbox',
-                //     '--disable-setuid-sandbox',
-                //     '--window-size=10x10',
-                //     '--disable-gpu',
-                //     '--window-position=-10000,-10000',
-                // ]
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--window-size=10x10',
+                    '--disable-gpu',
+                    '--window-position=-10000,-10000',
+                ]
             });
             const page = await browser.newPage();
             await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
